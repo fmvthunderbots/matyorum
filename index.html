@@ -1,0 +1,957 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Matematik Gelişim Yorumları</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+<style>
+/* Düzen: üstte sınıf sekmeleri + ayar paneli, altta öğrenci satırları (sol: bilgi/kontroller, sağ: düzenlenebilir yorum) */
+:root{
+  --bg:#f2f4f6; --surface:#ffffff; --surface-2:#e8edf1; --ink:#17212b; --muted:#566574; --line:#d3dbe2;
+  --accent:#1f3a56; --accent-ink:#ffffff; --focus:#2a6fb0;
+  --l0:#b5472f; --l1:#955f10; --l2:#4a7a0e; --l3:#0d7068; --l4:#4338ca;
+  --font-display:"Bricolage Grotesque","Source Sans 3",system-ui,sans-serif;
+  --font-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f161d; --surface:#17212b; --surface-2:#1f2b37; --ink:#e7edf2; --muted:#9aabb9; --line:#2c3a47;
+    --accent:#a9c8e6; --accent-ink:#0f161d; --focus:#6fb0ea;
+    --l0:#f09a84; --l1:#e3b04b; --l2:#a6c96a; --l3:#5fc7b8; --l4:#a5a0f5;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f161d; --surface:#17212b; --surface-2:#1f2b37; --ink:#e7edf2; --muted:#9aabb9; --line:#2c3a47;
+  --accent:#a9c8e6; --accent-ink:#0f161d; --focus:#6fb0ea;
+  --l0:#f09a84; --l1:#e3b04b; --l2:#a6c96a; --l3:#5fc7b8; --l4:#a5a0f5;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+.app{max-width:1240px;margin:0 auto;padding-block:20px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px 24px;margin-bottom:18px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(24px,4vw,34px);line-height:1.1;margin:2px 0 0;letter-spacing:-.01em;text-wrap:balance}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;display:flex;gap:8px;align-items:baseline}
+.tab small{font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
+.tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.tab[aria-selected="true"] small{color:inherit;opacity:.8}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:16px}
+.panel h2{font-family:var(--font-display);font-size:15px;margin:0 0 8px;font-weight:700}
+.band{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--surface-2)}
+.band span{display:block;height:100%}
+.band-scale{display:flex;position:relative;height:16px;margin-top:4px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.band-scale span{position:absolute;transform:translateX(-50%)}
+.th-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+.th{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.th b{display:flex;align-items:center;gap:6px;color:var(--ink);font-weight:600}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.th .fixed{padding:7px 10px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);font-variant-numeric:tabular-nums}
+input[type=text],input[type=number],select,textarea{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-width:0}
+input[type=number]{width:100%;font-variant-numeric:tabular-nums}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px 16px;align-items:end}
+.fld{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);min-width:0}
+.fld select,.fld input[type=text]{width:100%;color:var(--ink)}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{flex:1;border:0;background:var(--surface);padding:7px 8px;cursor:pointer;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.chk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+
+.sum{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin:18px 0 10px}
+.avg{font-size:14px;color:var(--muted);margin-right:6px;font-variant-numeric:tabular-nums}
+.avg b{color:var(--ink);font-size:18px;font-family:var(--font-display)}
+.chip{border:1px solid color-mix(in srgb,var(--c) 35%,var(--surface));background:color-mix(in srgb,var(--c) 12%,var(--surface));color:var(--c);border-radius:999px;padding:3px 11px;font-size:13px;font-weight:600;cursor:pointer;font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"]{background:var(--c);color:var(--surface);border-color:var(--c)}
+.chip.all{--c:var(--ink)}
+
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.bar .grow{flex:1 1 180px;min-width:0}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 13px;cursor:pointer;font-weight:600;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.small{padding:5px 10px;font-size:13px}
+.btn.ghost{font-weight:500;color:var(--muted)}
+.copygrp{display:flex;gap:6px;flex-wrap:wrap}
+
+details.paste{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:14px}
+details.paste summary{cursor:pointer;padding:11px 16px;font-weight:600}
+.paste-body{padding:0 16px 16px;display:grid;gap:10px}
+.paste-body textarea{width:100%;min-height:120px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;resize:vertical}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.msg{font-size:13px;font-weight:600;min-height:18px}
+
+.list{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.row{display:grid;grid-template-columns:minmax(250px,310px) minmax(0,1fr);gap:14px 22px;padding:16px 18px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.who{min-width:0;display:flex;flex-direction:column;gap:10px}
+.who-top{display:flex;gap:10px;align-items:baseline;min-width:0}
+.no{font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px;min-width:34px}
+.name{margin:0;font-family:var(--font-display);font-size:17px;font-weight:600;line-height:1.2;overflow-wrap:anywhere}
+.ctl{display:grid;grid-template-columns:96px 1fr;gap:8px 12px;align-items:end}
+.ctl .fld.wide{grid-column:1 / -1}
+.ctl input[type=text]{width:100%}
+.ort{font-variant-numeric:tabular-nums;font-weight:600}
+.pill{display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 12px;border-radius:8px;font-weight:600;font-size:14px;color:var(--c);background:color-mix(in srgb,var(--c) 13%,var(--surface));border:1px solid color-mix(in srgb,var(--c) 32%,var(--surface));white-space:nowrap}
+.pill.none{--c:var(--muted)}
+.cm{display:flex;flex-direction:column;gap:8px;min-width:0}
+.txt{width:100%;resize:none;line-height:1.55;padding:11px 13px;font-size:15px;overflow:hidden}
+.acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.edited{font-size:12px;color:var(--muted)}
+.count{margin-left:auto;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.empty{padding:34px 18px;text-align:center;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--accent);color:var(--accent-ink);padding:9px 16px;border-radius:8px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:opacity .18s;z-index:20;max-width:calc(100% - 32px)}
+.toast.on{opacity:1}
+.foot{margin-top:22px;font-size:13px;color:var(--muted)}
+
+[hidden]{display:none!important}
+.views{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.vtab{border:1px solid var(--line);background:transparent;border-radius:8px;padding:8px 16px;cursor:pointer;font-weight:600;color:var(--muted)}
+.vtab[aria-selected="true"]{background:var(--surface);color:var(--ink);border-color:var(--ink)}
+.cgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px 18px}
+.cg{display:flex;flex-direction:column;gap:5px;min-width:0}
+.cgl{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.03em;text-transform:uppercase}
+.chs{display:flex;flex-wrap:wrap;gap:5px}
+.ch{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:3px 11px;font-size:13px;cursor:pointer;line-height:1.5}
+.ch:hover{border-color:var(--c,var(--muted))}
+.ch.sp{--c:var(--l3)}.ch.sm{--c:var(--l1)}.ch.sn{--c:var(--l0)}.ch.sf{--c:var(--accent)}
+.ch[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:var(--surface);font-weight:600}
+.bulk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 14px}
+.bulk-flags{display:flex;flex-wrap:wrap;gap:6px 16px}
+@media (max-width:820px){
+  .row{grid-template-columns:minmax(0,1fr);padding:14px}
+  .ctl{grid-template-columns:96px 1fr}
+}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Matematik · 2026-2027</div>
+      <h1 id="h1">Gelişim raporu yorumları</h1>
+    </div>
+    <div class="tabs" id="tabs" role="tablist" aria-label="Sınıf seçimi"></div>
+  </header>
+
+  <div class="views" id="views" role="tablist" aria-label="Bölüm">
+    <button type="button" class="vtab" role="tab" data-v="gel">Gelişim raporu</button>
+    <button type="button" class="vtab" role="tab" data-v="alis">ALİS · öğretmenler arası bilgi aktarımı</button>
+  </div>
+
+  <section class="panel" aria-label="Ayarlar">
+    <div>
+      <h2>Puan aralıkları</h2>
+      <div class="band" id="band" aria-hidden="true"></div>
+      <div class="band-scale" id="bandScale" aria-hidden="true"></div>
+      <div class="th-grid" id="thGrid"></div>
+    </div>
+    <div class="opts" id="optsGel">
+      <div class="fld"><span>Yorum uzunluğu</span>
+        <div class="seg" id="lenSeg">
+          <button type="button" data-v="kisa">Kısa</button>
+          <button type="button" data-v="orta">Orta</button>
+          <button type="button" data-v="uzun">Uzun</button>
+        </div>
+      </div>
+      <label class="fld" for="term"><span>Dönem cümlesi</span>
+        <select id="term">
+          <option value="0">Ekleme</option>
+          <option value="1">1. dönem (ikinci döneme hazırlık)</option>
+          <option value="2">2. dönem (yıl sonu)</option>
+        </select>
+      </label>
+      <label class="fld" for="hitapMode"><span>Hitap şekli</span>
+        <select id="hitapMode">
+          <option value="tumu">Soyad hariç tüm adlar (Sevgili Alp Efe)</option>
+          <option value="ilk">Sadece ilk ad (Sevgili Alp)</option>
+        </select>
+      </label>
+      <div class="fld"><label for="imza">İmza satırı</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" id="imza" placeholder="Ad SOYAD" autocomplete="off">
+          <label class="chk"><input type="checkbox" id="imzaOn"> ekle</label>
+        </div>
+      </div>
+    </div>
+    <div class="opts" id="optsAlis" hidden>
+      <div class="fld"><span>Akademik değerlendirme</span>
+        <div class="seg" id="alisLenSeg">
+          <button type="button" data-v="kisa">Kısa</button>
+          <button type="button" data-v="uzun">Ayrıntılı</button>
+        </div>
+      </div>
+      <p class="hint" style="align-self:center">Seviye, yukarıdaki puan aralıklarına göre ortalamadan belirlenir. Öğrenci satırında işaretlediğiniz seçenekler son yoruma eklenir.</p>
+    </div>
+  </section>
+
+  <div class="sum" id="sum"></div>
+
+  <details class="paste" id="pasteBox">
+    <summary>Ortalamaları yapıştır (Excel'den)</summary>
+    <div class="paste-body">
+      <p class="hint">Excel'de satırları seçip kopyalayın ve aşağıya yapıştırın. Her satırda öğrencinin adı ve ortalaması olmalı; okul numarası varsa okunur. Örnek: <code>242 &nbsp;DEFNE ERÇEL &nbsp;85,5</code>. Şube sütunu olsa da sorun olmaz.</p>
+      <textarea id="pasteTa" placeholder="No&#9;Ad Soyad&#9;Ortalama"></textarea>
+      <div class="acts">
+        <button type="button" class="btn primary" id="pasteUpd">Mevcut listeyi güncelle / ekle</button>
+        <button type="button" class="btn" id="pasteRep">Listeyi bununla değiştir</button>
+        <span class="msg" id="pasteMsg" role="status"></span>
+      </div>
+    </div>
+  </details>
+
+  <details class="paste" id="bulkBox" hidden>
+    <summary>Toplu işaretle (sınıftaki herkese)</summary>
+    <div class="paste-body">
+      <p class="hint">Sınıfın çoğunluğu için geçerli olan seçenekleri burada seçip uygulayın, ardından farklı olan öğrencileri satırlarından düzeltin.</p>
+      <div class="bulk-grid" id="bulkGrid"></div>
+      <div class="bulk-flags" id="bulkFlags"></div>
+      <div class="acts">
+        <button type="button" class="btn primary" id="bulkFill">Boş olanlara uygula</button>
+        <button type="button" class="btn" id="bulkOver">Hepsinin üzerine yaz</button>
+        <button type="button" class="btn ghost" id="bulkClear">Bu sınıfın işaretlerini temizle</button>
+      </div>
+    </div>
+  </details>
+
+  <div class="bar">
+    <input type="text" id="q" class="grow" placeholder="Öğrenci ara (ad veya numara)" aria-label="Öğrenci ara" autocomplete="off">
+    <label class="fld" style="flex-direction:row;align-items:center;gap:8px" for="sort"><span>Sırala</span>
+      <select id="sort">
+        <option value="ad">Ada göre</option>
+        <option value="no">Numaraya göre</option>
+        <option value="ort">Ortalamaya göre</option>
+        <option value="seviye">Seviyeye göre</option>
+      </select>
+    </label>
+    <button type="button" class="btn" id="dir" aria-label="Sıralama yönü"></button>
+    <div class="copygrp">
+      <select id="copyMode" aria-label="Kopyalanacak sütunlar">
+        <option value="yorum">Sadece yorumlar</option>
+        <option value="noadyorum">No · Ad · Yorum</option>
+        <option value="hepsi">No · Ad · Ortalama · Yorum</option>
+      </select>
+      <button type="button" class="btn primary" id="copyAll">Hepsini kopyala</button>
+    </div>
+    <button type="button" class="btn" id="shuffle" title="Tüm yorumların cümle seçimlerini yeniden dağıtır">Yeniden karıştır</button>
+  </div>
+
+  <div class="list" id="list"></div>
+
+  <p class="foot">Yorumlar ortalamaya göre cümle havuzlarından kurulur; kutuya yazarak istediğiniz yeri değiştirebilirsiniz. Değişiklikleriniz bu tarayıcıda saklanır.
+    <button type="button" class="btn small ghost" id="reset">Başlangıç verisine dön</button></p>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+const ROSTER = {"5D": [{"no": 241, "ad": "ECE GÖREN", "ort": 82.22}, {"no": 283, "ad": "EZEL DANIEL DİLBAZ", "ort": 82.22}, {"no": 434, "ad": "NEHİR NİSA ÜNVER", "ort": 82.22}, {"no": 383, "ad": "NEHİR YALÇINKAYA", "ort": 75.56}, {"no": 422, "ad": "DORUK ÇINAR TOKER", "ort": 75.56}, {"no": 335, "ad": "NESRİN GÖKÇE ÜZE", "ort": 73.33}, {"no": 101, "ad": "DEFNE SEFER", "ort": 68.89}, {"no": 215, "ad": "ÇAĞAN SAFA USTA", "ort": 66.67}, {"no": 217, "ad": "ÇINAR ABAYDIN", "ort": 64.45}, {"no": 262, "ad": "EMİR KIŞ", "ort": 64.45}, {"no": 426, "ad": "MUHAMMET ALİ KARLI", "ort": 64.45}, {"no": 220, "ad": "DEFNE ÖZAT", "ort": 60.0}, {"no": 110, "ad": "KUZEY KURİŞ", "ort": 57.78}, {"no": 114, "ad": "MURAT TUNCER", "ort": 55.56}, {"no": 146, "ad": "ZEYNEP NİL MASLAMANİ", "ort": 55.56}, {"no": 368, "ad": "CAN YILDIRIM", "ort": 55.56}, {"no": 189, "ad": "AYŞE DURU KASIM", "ort": 46.67}, {"no": 286, "ad": "İPEK ECEM ÖZER", "ort": 37.78}, {"no": 229, "ad": "DENİZ KARAGÖREN", "ort": 22.22}, {"no": 300, "ad": "ARYA BAHTİYAR", "ort": 20.0}], "5E": [{"no": 310, "ad": "YAĞIZ KEBELİ", "ort": 100.0}, {"no": 108, "ad": "KAAN EGE DEMİR", "ort": 91.11}, {"no": 280, "ad": "EYLÜL UZEL", "ort": 91.11}, {"no": 369, "ad": "ELA KELEŞ", "ort": 91.11}, {"no": 301, "ad": "ELİF POTUR", "ort": 82.22}, {"no": 351, "ad": "ZAHİDE KARATAŞ", "ort": 82.22}, {"no": 285, "ad": "HATİCE MEVA SOYSAL", "ort": 75.56}, {"no": 244, "ad": "FATMA SUZAN BEKTAŞ", "ort": 55.56}, {"no": 345, "ad": "TUNA AKGÜN", "ort": 55.56}, {"no": 375, "ad": "LEVENT BİLMİŞ", "ort": 55.56}, {"no": 218, "ad": "ÇINAR YILMAZ", "ort": 46.67}, {"no": 354, "ad": "ARAS ASLAN", "ort": 46.67}, {"no": 334, "ad": "MUHAMMED ENES YAŞAR", "ort": 42.22}, {"no": 227, "ad": "DENİZ GUNEF DİN", "ort": 28.89}, {"no": 360, "ad": "ZEYNEB SARE BİRER", "ort": 28.89}, {"no": 418, "ad": "BEYZA ADIGÜZEL", "ort": 24.45}, {"no": 240, "ad": "DURU PARKAN", "ort": 20.0}, {"no": 212, "ad": "CAN NEFES GÜZEL", "ort": 11.11}, {"no": 213, "ad": "CEM SARI", "ort": 11.11}, {"no": 340, "ad": "ROHAM KARAMZADEH", "ort": null}], "6A": [{"no": 465, "ad": "YUSUF YANKI EKİZ", "ort": 84.44}, {"no": 331, "ad": "DURU İŞERİ", "ort": 73.33}, {"no": 444, "ad": "ÖMER SADETTİN KELEŞ", "ort": 73.33}, {"no": 477, "ad": "ZEYNEP KIZILKAYA", "ort": 68.89}, {"no": 249, "ad": "DEFNE TOPAL", "ort": 66.67}, {"no": 272, "ad": "DEMİR ALİ KAYA", "ort": 65.56}, {"no": 362, "ad": "ELİS DEMİR", "ort": 63.33}, {"no": 296, "ad": "DERİN HOBAT", "ort": 60.0}, {"no": 279, "ad": "DENİZ ÇİM", "ort": 55.56}, {"no": 463, "ad": "YUSUF EREN", "ort": 46.67}, {"no": 12, "ad": "ALP ÖZ", "ort": 42.22}, {"no": 125, "ad": "CEM ÇINAR DUMAN", "ort": 40.0}, {"no": 403, "ad": "KUZEY KURTULDU", "ort": 40.0}, {"no": 454, "ad": "SERHAT YAMAN AĞIRMAN", "ort": 31.11}, {"no": 11, "ad": "ALP METE KURU", "ort": 28.89}, {"no": 291, "ad": "DENİZ PINDIKOĞLU", "ort": 28.89}, {"no": 458, "ad": "TANEM LÂL KAVAKLI", "ort": 28.89}, {"no": 223, "ad": "DEFNE AYTAK", "ort": 26.67}, {"no": 404, "ad": "KÜRŞAT GÖKDENİZ BEKTAŞ", "ort": 24.44}, {"no": 356, "ad": "ELİF DULUNDU", "ort": 17.78}, {"no": 21, "ad": "AYAZ ALİ YILDIZ", "ort": 13.33}, {"no": 421, "ad": "MERYEM ŞEN", "ort": 0}, {"no": 100, "ad": "BEREN NEZİROĞLULARI", "ort": 0}], "6B": [{"no": 370, "ad": "EREN ÖZEL", "ort": 93.33}, {"no": 456, "ad": "ŞEVVAL ÖZTÜRK", "ort": 84.44}, {"no": 459, "ad": "TUNA DEMİRER", "ort": 82.22}, {"no": 348, "ad": "ELA ALDEMİR", "ort": 77.78}, {"no": 324, "ad": "DORUK ÇETİN", "ort": 66.67}, {"no": 419, "ad": "MERCAN GÖZÜKÜÇÜK", "ort": 66.67}, {"no": 437, "ad": "NİKAN KAYA", "ort": 66.67}, {"no": 242, "ad": "DEFNE ERÇEL", "ort": 57.78}, {"no": 453, "ad": "SELİS TAHA", "ort": 57.78}, {"no": 16, "ad": "ARYA SAĞLIK", "ort": 55.56}, {"no": 3, "ad": "ADA USTA", "ort": 53.33}, {"no": 423, "ad": "MİHRİMAH ELA YILDIRIM", "ort": 53.33}, {"no": 118, "ad": "BİLGE NAZ ÖZCAN", "ort": 51.11}, {"no": 9, "ad": "ALP EFE IŞIK", "ort": 48.89}, {"no": 46, "ad": "BARTU UÇAR", "ort": 48.89}, {"no": 22, "ad": "AYŞE ADA YEŞİLYURT", "ort": 42.22}, {"no": 439, "ad": "NİL TABAK", "ort": 40.0}, {"no": 469, "ad": "ZEYNEP BİLİR", "ort": 40.0}, {"no": 480, "ad": "ZEYNEP ZÜLEYHA GEYİK", "ort": 28.89}, {"no": 372, "ad": "EREN TURANBARANOĞLU", "ort": 22.22}, {"no": 81, "ad": "BEREN BULCA", "ort": 15.56}, {"no": 392, "ad": "KEREM ÖZTÜRK", "ort": 8.89}, {"no": 413, "ad": "MEHMET ALİ ÇEMBERCİ", "ort": 0}]};
+const LV = ["Ortalamanın altı","Orta","Orta üstü","İyi","Çok iyi"];
+const CLASSES = ["5D","5E","6A","6B"];
+const KEY = "mgy-v1";
+
+/* ---------- Yorum havuzu (her seviye için 5 bölüm) ---------- */
+const POOL = [
+/* 0 — Ortalamanın altı */
+{
+open:[
+"Matematik dersinde şu ana kadar istediğin başarıya ulaşamadığının farkındayım; ancak öğrenmeye açık tutumunu görmek beni mutlu ediyor.",
+"Bu dönemki sınav sonuçların, kazanımlarda tamamlaman gereken eksikler olduğunu gösteriyor. Bu eksikleri kapatmak için şimdiden doğru adımları atabilirsin.",
+"Derslerde konuları daha dikkatli takip etmen ve anlamadığın yerleri açıkça belirtmen, başarını yükseltmenin ilk adımı olacaktır.",
+"Potansiyelinin şu anki başarının çok üzerinde olduğunu düşünüyorum; bunun için derse daha fazla odaklanman ve çalışma düzenini oturtman gerekiyor.",
+"Bu dönem matematik ortalamanın beklenen düzeyin altında kaldığını görüyorum. Bu durum geçici ve düzenli bir çalışmayla kolayca değiştirilebilir.",
+"Temel işlem becerilerinde ve konuların kavranmasında desteğe ihtiyaç duyduğunu gözlemliyorum. Bu desteği almaktan çekinmemen çok önemli.",
+"Derslere katılımını artırdığında ve konuları adım adım takip ettiğinde matematikte çok daha iyi bir noktaya geleceksin.",
+"Öncelikle gösterdiğin çaba için sana teşekkür ediyorum. Matematikte kalıcı başarı küçük ama düzenli adımlarla gelir ve senin de bu yolda ilerleyebileceğine inanıyorum."
+],
+study:[
+"Her gün en az 15-20 dakika konu tekrarı yapmalı, derste çözdüğümüz soruları defterinden yeniden çözmelisin.",
+"Kazanım karnında yer alan konu eksiklerini belirleyip bunları sırayla kapatmalı, önce temel konulardan başlamalısın.",
+"Anlamadığın soruları not alıp bir sonraki derste öğretmenine sormalı, takıldığın noktaları biriktirmeden çözüme kavuşturmalısın.",
+"Her gün birkaç soru çözerek işlem becerini güçlendirmeli ve işlem adımlarını defterine düzenli biçimde yazmalısın.",
+"Hafta içinde belirleyeceğin sabit saatlerde kısa tekrarlar yaparak çalışma alışkanlığı kazanmalısın.",
+"Basit sorulardan başlayıp zamanla zorluk seviyesini artırarak çalışmalı, başardığın her soruyla özgüvenini güçlendirmelisin.",
+"Derste anlatılan örnekleri defterinde eksiksiz tutmalı ve ders sonrasında bu örnekleri tekrar çözmelisin.",
+"Zorlandığın konularda arkadaşlarınla birlikte çalışabilir, öğretmeninden ek destek isteyebilirsin."
+],
+resource:[
+"EBA dijital platformundaki içerikleri takip etmen, derste öğrendiğin konuları farklı anlatımlarla görmeni sağlayacaktır.",
+"Ders fasiküllerinden ve MEB kitabından yararlanarak yapacağın düzenli tekrarlar, eksiklerini kapatmana yardımcı olacaktır.",
+"Sebit dijital platformundaki içeriklerle yapacağın günlük tekrarlar, bilgilerini kalıcı hale getirecektir.",
+"EBA üzerindeki konu anlatımlarını izleyip ardından ilgili soruları çözmen öğrenmeni pekiştirecektir.",
+"Ders fasiküllerindeki temel düzey soruları düzenli çözmen, konulara olan hakimiyetini artıracaktır.",
+"MEB kitabındaki örnekleri ve alıştırmaları sırayla çalışman, konuları basamaklı biçimde öğrenmeni sağlayacaktır.",
+"Sebit platformundaki konu tekrarlarını ve fasiküllerdeki soruları birlikte kullanman, eksiklerini hızla kapatmanı sağlayacaktır."
+],
+extra:[
+"Takıldığın her noktada yanında olduğumu ve destek vermeye hazır olduğumu unutma.",
+"Küçük ilerlemelerin bile zamanla büyük bir fark yaratacağını sen de göreceksin.",
+"Soru sormaktan ve hata yapmaktan çekinme; hatalar öğrenmenin en doğal parçasıdır.",
+"Önümüzdeki sınavlarda eksiklerini kapattığını gördükçe özgüvenin de artacaktır.",
+"İstediğin hedeflere ulaşman için gereken tek şey düzenli bir tempo yakalamaktır.",
+"Bu süreçte ailenle birlikte bir çalışma planı yapman da sana destek olacaktır."
+],
+close:[
+"Sana güveniyor, çalışmalarını artırdığında başarının da yükseleceğine yürekten inanıyorum.",
+"Gelecek sınavlarda çok daha iyi sonuçlar elde edeceğine yürekten inanıyor, sana güveniyorum.",
+"Düzenli çalışmalarla kısa sürede güzel bir ilerleme kaydedeceğine inanıyorum.",
+"Azmini ve motivasyonunu yüksek tuttuğunda başarının artarak devam edeceğine yürekten inanıyorum.",
+"Çabanı artırdığında matematikte yükseleceğine inancım tam; bu yolda yanındayım.",
+"Kendine güvenmeni ve vazgeçmemeni istiyorum; başarının geleceğine yürekten inanıyorum.",
+"Sana güveniyor, gelişiminin artarak devam edeceğine inanıyorum.",
+"Potansiyelinin farkındayım ve bu süreci başarıyla yöneteceğine güvenim tam."
+]},
+/* 1 — Orta */
+{
+open:[
+"Derslerde konuları genel olarak takip ettiğini gözlemliyorum. Başarını bir üst seviyeye taşımak için biraz daha çaba göstermen yeterli olacaktır.",
+"Matematik dersindeki çalışmaların ve öğrenme sürecine gösterdiğin özen olumlu; ancak başarı düzeyini yükseltmek için pekiştirmeye ihtiyacın var.",
+"Bu dönemki sonuçların, konuların büyük bölümünü kavradığını fakat bazı noktalarda eksiklerin olduğunu gösteriyor.",
+"Derse ilgin ve katılımın güzel; bu ilgiyi düzenli çalışmayla desteklediğinde daha yüksek başarılara ulaşabilirsin.",
+"Zaman zaman dikkatinin dağıldığını fark ediyorum. Derse daha uzun süre odaklanman başarına doğrudan yansıyacaktır.",
+"Matematikte temel bir birikimin olduğunu görüyorum; bu birikimi düzenli tekrarlarla sağlamlaştırman gerekiyor.",
+"Öğrenme sürecine gösterdiğin çabayı görüyor ve takdir ediyorum. Başarını artırmak için çalışmalarını daha planlı hale getirmelisin.",
+"Bildiğin konularda doğru işlemler yapabiliyorsun; fakat soru çeşitliliği arttığında zorlandığını gözlemliyorum."
+],
+study:[
+"Başarını artırmak için günlük konu tekrarlarına ve ekstra soru çözümüne biraz daha fazla zaman ayırmanı öneriyorum.",
+"Zorlandığın soru tiplerini belirleyip bunlar üzerinde tekrar çalışmalı, anlamadığın noktaları öğretmeninden destek alarak pekiştirmelisin.",
+"Her konunun ardından en az bir soru seti çözerek eksiklerini zamanında görmelisin.",
+"Çözdüğün sorulardaki hataları defterine not alıp belirli aralıklarla yeniden çözmen kalıcı öğrenmeyi sağlayacaktır.",
+"Kazanım karnında yer alan konu eksiklerini kapatmak için haftalık bir tekrar planı yapmalısın.",
+"Problemlerde işlem adımlarını düzenli yazman ve sonucu kontrol etme alışkanlığı kazanman hatalarını azaltacaktır.",
+"Derste not tutmaya özen göstermeli ve notlarını ders çıkışında gözden geçirmelisin.",
+"Düzenli soru çözümü yaparak ve anlamadığın yerleri sorarak bilgilerini daha kalıcı hale getirebilirsin."
+],
+resource:[
+"Sebit dijital platformundaki içeriklerden yararlanarak konu tekrarları yapman, bilgilerini pekiştirmeni sağlayacaktır.",
+"EBA dijital platformundaki içerikleri takip etmen ve ders fasiküllerindeki soruları çözmen öğrenmeni destekleyecektir.",
+"Ders fasiküllerinden ve MEB kitabından yapacağın düzenli çalışmalar konuları daha kalıcı hale getirecektir.",
+"EBA'daki testleri çözerek kendini düzenli aralıklarla değerlendirmen eksiklerini görmeni kolaylaştıracaktır.",
+"Sebit platformundaki konu tekrarlarını fasikül soruları ile birlikte çalışman ilerlemeni hızlandıracaktır.",
+"MEB kitabındaki örnek çözümleri inceleyip benzer soruları kendin çözmen konulara hakimiyetini artıracaktır.",
+"Dijital platformlardaki içerikleri ve fasikülleri birlikte kullanman farklı soru tiplerini tanımanı sağlayacaktır."
+],
+extra:[
+"Yeni nesil sorularda önce soruyu dikkatlice okuyup verilenleri ayırman doğru çözüme ulaşmanı kolaylaştıracaktır.",
+"Küçük hedefler belirleyerek ilerlediğinde gelişimini kendin de net biçimde göreceksin.",
+"Soru sormaktan çekinmemen, anlamadığın noktaları hızlıca çözmene yardımcı olacaktır.",
+"Derse aktif katılımın, öğrendiklerini pekiştirmen açısından çok değerli olacaktır.",
+"Düzenli çalışmanın sonuçlarını önümüzdeki sınavlarda kısa sürede göreceksin.",
+"Kendi potansiyeline güvenmen ve çalışmalarını istikrarlı biçimde sürdürmen en büyük gücün olacaktır."
+],
+close:[
+"İstikrarlı çalıştığında çok daha iyi sonuçlar elde edeceğine yürekten inanıyorum.",
+"Sana güveniyor, başarılarının artarak devam edeceğine yürekten inanıyorum.",
+"Düzenli çalışmalarını sürdürdüğünde akademik başarının belirgin biçimde artacağına inanıyorum.",
+"Bu yolda gösterdiğin çabayla hedeflerine ulaşacağına inancım tam.",
+"Azmini koruyup planlı çalıştığında güzel ilerlemeler kaydedeceğine inanıyorum.",
+"Dikkatini ve çabanı artırdığında matematikte çok daha başarılı olacağına yürekten inanıyorum.",
+"Seni bu süreçte desteklemeye devam edeceğim; başarılarının artarak sürmesini diliyorum.",
+"Kendine güvenmeni ve çalışmalarına aynı istekle devam etmeni istiyorum; başarının geleceğine inanıyorum."
+]},
+/* 2 — Orta üstü */
+{
+open:[
+"Derslerdeki dikkatli takibin ve düzenli çalışmalarınla güzel bir akademik başarı elde ettin.",
+"Matematik dersine gösterdiğin ilgi ve çalışmaların sayesinde başarı düzeyin her geçen gün yükseliyor.",
+"Derslerde konuları dikkatle takip etmen ve sorumluluklarını yerine getirmen takdir edilmeye değer.",
+"Bu dönemki sonuçların, konuların büyük bölümüne hakim olduğunu gösteriyor; bunu çok güzel buluyorum.",
+"Öğrenme sürecine olan özenin ve çalışma disiplinin başarına olumlu yansıyor.",
+"Derslerdeki katılımını ve çabanı görmek beni mutlu ediyor; temelin sağlam ve gelişmeye açık.",
+"Matematikte iyi bir çizgide ilerliyorsun; küçük eksiklerini kapattığında çok daha yüksek bir seviyeye çıkabilirsin.",
+"Düzenli çalışmaların ve öğrenmeye olan isteğin sayesinde güzel bir ilerleme kaydediyorsun."
+],
+study:[
+"Başarını bir üst seviyeye taşımak için günlük tekrarlarını aksatmamalı ve ekstra soru çözümüne zaman ayırmalısın.",
+"Yeni nesil sorular üzerinde çalışarak analitik düşünme ve problem çözme becerilerini daha da geliştirebilirsin.",
+"Yanlış yaptığın soruların nedenlerini analiz edip benzer sorularla pekiştirmen hatalarını en aza indirecektir.",
+"Süre tutarak soru çözmen hem hızını hem de sınav performansını artıracaktır.",
+"Derste daha aktif olmanı ve fikirlerini paylaşmanı bekliyorum; bu, öğrendiklerini pekiştirmeni sağlayacaktır.",
+"Farklı soru tipleriyle karşılaştığında çözüm yollarını karşılaştırman muhakeme becerini güçlendirecektir.",
+"Konu tekrarlarını planlı biçimde sürdürmen ve zorlandığın noktaları öğretmenine sorman gelişimini hızlandıracaktır.",
+"Düzenli konu tekrarı yapıp eksik kalan kazanımlarını tamamlaman başarını yükseltecektir."
+],
+resource:[
+"Sebit dijital platformundaki içeriklerden yararlanarak düzenli tekrarlar yapman bilgilerini pekiştirmeni sağlayacaktır.",
+"EBA platformundaki güncel içeriklerden ve testlerden faydalanman farklı soru tiplerine aşina olmanı sağlayacaktır.",
+"Ders fasiküllerindeki orta ve üst düzey soruları çözmen konulara olan hakimiyetini artıracaktır.",
+"Okul sonrasında Sebit platformundaki içeriklerle soru çözümünü artırman başarı seviyeni yükseltecektir.",
+"MEB kitabı ve fasiküllerle yapacağın düzenli çalışmalar kazanımlardaki eksiklerini tamamlamanı sağlayacaktır.",
+"EBA'daki konu anlatımları ve değerlendirme testleri ile çalışmalarını çeşitlendirmen faydalı olacaktır.",
+"Dijital platformlardaki içerikleri ve fasikül sorularını birlikte kullanman öğrenmeni kalıcı hale getirecektir."
+],
+extra:[
+"Çalışmalarını biraz daha çeşitlendirdiğinde hedeflerine kolaylıkla ulaşacağını düşünüyorum.",
+"Soruları çözdükten sonra sonuçları kontrol etme alışkanlığı kazanman dikkat hatalarını azaltacaktır.",
+"Önümüzdeki dönemde yapacağımız deneme sınavlarında bu çalışmaların karşılığını alacaksın.",
+"Sınıf içi etkinliklerde daha fazla yer alman, kendini ifade etme becerini de geliştirecektir.",
+"Bilgilerini taze tutmak için geriye dönük kısa tekrarlar yapman çok yararlı olacaktır.",
+"Zorlandığın sorularda pes etmeden farklı yollar denemen problem çözme gücünü artıracaktır."
+],
+close:[
+"Bu istikrarlı yaklaşımınla başarılarının artarak devam edeceğine yürekten inanıyorum.",
+"Disiplinli çalışmalarını sürdürdüğünde hedeflerine kolaylıkla ulaşacağına inanıyorum.",
+"Sana güveniyor, başarılarının artarak devam edeceğine yürekten inanıyorum.",
+"Azmini koruduğun takdirde çok daha yüksek başarılar elde edeceğine inanıyorum.",
+"Gösterdiğin bu çabayı sürdürdüğünde çok daha iyi sonuçlar alacağına inancım tam.",
+"Gelişimini keyifle izliyor, başarılarının devamını diliyorum.",
+"Seni bu güzel ilerleyişin için tebrik ediyor, çalışmalarının karşılığını alacağına inanıyorum.",
+"Potansiyeline ve kararlılığına güveniyor, başarılarının artarak sürmesini diliyorum."
+]},
+/* 3 — İyi */
+{
+open:[
+"Derslerdeki dikkatli takibin, aktif katılımın ve düzenli çalışmaların sayesinde elde ettiğin başarıdan dolayı seni kutluyorum.",
+"Matematik dersindeki başarın ve öğrenme sürecine gösterdiğin özen gerçekten takdir edilmeye değer.",
+"Derslere olan ilgin ve çalışma disiplinin başarı grafiğine çok güzel yansıyor.",
+"Bu dönem gösterdiğin akademik başarıyı ve sorumluluk bilincini takdir ediyorum.",
+"Derslerde konuları dikkatle dinlemen ve düzenli çalışman güçlü bir temel oluşturduğunu gösteriyor.",
+"Matematikteki yüksek başarın, düzenli ve planlı çalışmanın en güzel sonucu.",
+"Öğrenme sürecindeki istikrarını ve çabanı görmek beni gerçekten mutlu ediyor.",
+"Sınavlardaki başarın, derslere gösterdiğin ilginin ve çalışmalarındaki özenin bir yansıması."
+],
+study:[
+"Başarını daha da yukarı taşımak için yeni nesil sorular üzerinde çalışarak problem çözme becerilerini geliştirmeni öneriyorum.",
+"Süre tutarak çözeceğin yeni nesil sorular hem hızını hem de analitik düşünme becerini artıracaktır.",
+"Derste fikirlerini daha sık paylaşman hem kendini ifade etme becerini hem de kalıcı öğrenmeni destekleyecektir.",
+"Farklı soru tipleri üzerinde çalışarak çözüm stratejilerini çeşitlendirmen başarını daha da yükseltecektir.",
+"Düzenli tekrarları aksatmaman ve bilgilerini taze tutman bu başarını kalıcı hale getirecektir.",
+"Hata yaptığın soruları kısa notlarla kaydetmen küçük dikkat hatalarını ortadan kaldıracaktır.",
+"Sınıf içi etkinliklerde daha aktif rol almanı ve arkadaşlarınla düşünce paylaşımı yapmanı bekliyorum.",
+"Zorluk seviyesi yüksek sorulara da zaman ayırarak çalışmalarını bir adım ileri taşıyabilirsin."
+],
+resource:[
+"Sebit dijital platformundaki içeriklerden yararlanarak yapacağın düzenli tekrarlar bilgilerini pekiştirmene destek olacaktır.",
+"EBA platformundaki güncel içeriklerden ve testlerden faydalanman farklı soru tiplerinde pratik kazanmanı sağlayacaktır.",
+"Okul sonrasında Sebit platformundaki içeriklerle soru çözümünü artırman başarı seviyeni daha da yükseltecektir.",
+"Fasiküllerdeki üst düzey sorular ve EBA içerikleri çalışmalarını çeşitlendirmen için iyi bir fırsat sunuyor.",
+"EBA'daki değerlendirme testlerini süre tutarak çözmen sınav performansını destekleyecektir.",
+"MEB kitabındaki zorlayıcı soruları ve fasikül çalışmalarını birlikte yürütmen derinlemesine öğrenmeni sağlayacaktır.",
+"Dijital platformlardaki ek kaynakları kullanman konular arası bağlantıları görmeni kolaylaştıracaktır."
+],
+extra:[
+"Önümüzdeki dönem gireceğimiz deneme sınavlarında bu çalışmaların meyvesini toplayacağına eminim.",
+"Merak eden ve sorgulayan yaklaşımını korumak seni her geçen gün daha da ileriye taşıyacaktır.",
+"Öğrendiklerini arkadaşlarına anlatman bilgilerini pekiştirmenin en etkili yollarından biridir.",
+"Sınav sırasında soruları dikkatle okuyup işlem kontrolü yapman başarını daha da artıracaktır.",
+"Bu çizgiyi korumanın en kolay yolu tekrarları ve soru çözümlerini bir alışkanlık haline getirmektir.",
+"Matematiğe olan ilgini farklı kaynaklarla desteklemen bakış açını genişletecektir."
+],
+close:[
+"Bu istikrarlı yaklaşımınla başarılarının artarak devam edeceğine yürekten inanıyorum.",
+"Seni içtenlikle tebrik ediyor, başarılarının devamını diliyorum.",
+"Disiplinli çalışmalarını sürdürdüğün takdirde hedeflerine kolaylıkla ulaşacağına inanıyorum.",
+"Gelişimini görmek benim için büyük bir mutluluk; sana güveniyor, başarılarının artarak sürmesini diliyorum.",
+"Azmin ve sorumluluk bilincinle tüm hedeflerine ulaşacağına inancım tam.",
+"Gösterdiğin bu çabayla başarının katlanarak artacağına yürekten inanıyorum.",
+"Bu güzel ivmeni koruduğunda çok daha yüksek başarılar elde edeceğine inanıyorum.",
+"Seninle çalışmaktan keyif alıyor, başarılarının devamını içtenlikle diliyorum."
+]},
+/* 4 — Çok iyi */
+{
+open:[
+"Derslerdeki yüksek konsantrasyonun, istekli ve aktif katılımın sayesinde elde ettiğin üstün başarıdan dolayı seni içtenlikle tebrik ediyorum.",
+"Matematik dersindeki başarın, disiplinli çalışmanın ve öğrenme tutkunun en güzel meyvesi.",
+"Derslerde gösterdiğin dikkat, sorumluluk bilinci ve çalışma disiplini gerçekten örnek alınacak düzeyde.",
+"Bu dönem elde ettiğin yüksek başarı beni gerçekten gururlandırdı.",
+"Konulara hakimiyetin ve problem çözme becerin takdire değer; derse katkın da sınıfa güzel bir enerji katıyor.",
+"Sürece aktif katılan, merak eden ve düzenli çalışan bir öğrenci olarak başarının zirvesinde ilerliyorsun.",
+"Sınavlardaki üstün başarın azmin ve düzenli çalışmanın bir sonucu; bu çabadan dolayı seni kutluyorum.",
+"Matematikteki başarın ve öğrenmeye olan isteğin seni her geçen gün daha da ileriye taşıyor."
+],
+study:[
+"Bu ivmeyi korumak için yeni nesil soru çözümlerine ağırlık vermeni ve düzenli tekrarları asla ihmal etmemeni öneriyorum.",
+"Süre tutarak çözeceğin yeni nesil sorular ve farklı soru tipleri becerilerini bir üst seviyeye taşıyacaktır.",
+"Zorluk seviyesi yüksek ve çok adımlı problemler üzerinde çalışman analitik düşünme gücünü daha da geliştirecektir.",
+"Çözüm yollarını farklı yöntemlerle denemen ve bunları arkadaşlarınla paylaşman bilgini derinleştirecektir.",
+"Başarını sürdürmek için düzenli tekrarları aksatmaman ve bilgilerini taze tutman yeterli olacaktır.",
+"Sınıf içi etkinliklerde arkadaşlarına destek olman hem onların hem de kendi öğrenmenin kalıcı olmasını sağlayacaktır.",
+"Sınav stratejini geliştirmek için süre yönetimi ve işlem kontrolü üzerine çalışabilirsin.",
+"Konular arasındaki bağlantıları kurmaya çalışman ve sorgulayıcı yaklaşımını sürdürmen seni bir adım öne taşıyacaktır."
+],
+resource:[
+"EBA platformundaki güncel içeriklerden faydalanarak farklı soru tipleri üzerinde pratik yapman deneme sınavlarında seni çok daha ileriye taşıyacaktır.",
+"Sebit dijital platformundaki içeriklerden yararlanmanın yanı sıra fasiküllerdeki üst düzey soruları çözmeni öneriyorum.",
+"EBA'daki değerlendirme testlerini süre tutarak çözmen sınav performansını destekleyecektir.",
+"Fasiküllerdeki zorlayıcı sorular ve dijital platformlardaki ek içerikler çalışmalarını çeşitlendirmen için iyi bir fırsat.",
+"Sebit ve EBA platformlarındaki farklı düzeydeki soruları çözerek kendini sürekli geliştirebilirsin.",
+"MEB kitabı dışında farklı kaynaklardan da soru çözmen bakış açını zenginleştirecektir.",
+"Dijital platformlardaki ileri düzey içerikler merakını ve başarını besleyecektir."
+],
+extra:[
+"Önümüzdeki dönem gireceğimiz deneme sınavlarında bu çalışmalarla çok iyi sonuçlar alacağından eminim.",
+"Seninle birlikte çalışmaktan ve bu başarılı yolculukta sana destek olmaktan büyük mutluluk duyuyorum.",
+"Arkadaşlarına yardım etmen ve bilgini paylaşman sınıfımıza değer katıyor.",
+"İlgin ve merakın seni matematikte çok güzel yerlere taşıyacaktır.",
+"Başarını sadece sonuçlarla değil, öğrenme sürecinden aldığın keyifle de sürdürmeni istiyorum.",
+"Bu başarının arkasındaki düzenli çalışma alışkanlığını korumak en büyük güvencen olacaktır."
+],
+close:[
+"Azmin ve sorumluluk bilincinle tüm hedeflerine ulaşacağına inancım tam.",
+"Seni içtenlikle tebrik ediyor, başarılarının devamını diliyorum.",
+"Bu harika ivmeyle başarılarının katlanarak artacağına yürekten inanıyorum.",
+"Potansiyeline ve başaracağına olan inancım tam; seni gönülden tebrik ediyorum.",
+"Gelişimini görmek benim için her zaman büyük bir mutluluk; başarılarının devamını diliyorum.",
+"Bu istikrarlı duruşunla başarıların daim olsun, seni içtenlikle tebrik ediyorum.",
+"Sana güveniyor, başarılarının artarak devam edeceğine yürekten inanıyorum.",
+"Sahip olduğun potansiyelle çok daha yükseklere çıkacağına eminim; emeğin için teşekkür ediyorum."
+]}
+];
+
+/* ---------- Genişletilmiş havuz ---------- */
+const EXTRA = [{"open": ["Matematik dersinde bu dönem beklediğimiz düzeye ulaşamadığını görüyorum; ancak bu durumun düzenli bir çalışmayla değişebileceğine inanıyorum.", "Derslerde zaman zaman konulara yabancılık çektiğini ve işlem adımlarında zorlandığını gözlemliyorum.", "Matematikte kalıcı başarının sabır ve düzenli tekrarla geldiğini unutma; bu dönemki sonuçların bunu bize gösteriyor.", "Sınav sonuçların, bazı kazanımları henüz tam oturtamadığını gösteriyor; bu eksikleri birlikte tamamlayacağız.", "Derse ilgini ve katılımını artırdığında potansiyelini çok daha net ortaya koyacağını düşünüyorum.", "Temel konulardaki eksiklerin üst konuları anlamanı zorlaştırdığını görüyorum; bu yüzden önce temeli sağlamlaştırmak çok önemli.", "Gösterdiğin çabayı görüyorum; ancak bu çabanın düzenli bir çalışma planıyla desteklenmesi gerekiyor.", "Matematiğe karşı önyargı oluşturmadan adım adım ilerlediğinde başarının geleceğini göreceksin."], "study": ["Derste çözdüğümüz her örneği evde kendi başına tekrar çözmeyi alışkanlık haline getirmelisin.", "İşlem hatalarını azaltmak için her soruyu çözdükten sonra sonucunu kontrol etmelisin.", "Çok sayıda soruya bakmak yerine az sayıda soruyu dikkatle ve anlayarak çözmeye odaklanmalısın.", "Konu başlıklarını bir listeye yazıp anladığın konuların yanına işaret koyarak eksiklerini görünür hale getirmelisin.", "Problemlerde önce verilenleri ve istenenleri ayrı ayrı yazma alışkanlığı kazanmalısın.", "Hafta sonu geçen haftanın konularını gözden geçirmek için yarım saatlik bir tekrar zamanı ayırmalısın.", "Dört işlem gibi temel becerilerini her gün kısa alıştırmalarla güçlendirmelisin.", "Derste anlamadığın her noktayı o gün içinde öğretmenine veya sınıf arkadaşına sorarak çözüme kavuşturmalısın."], "extra": ["Bu süreçte küçük başarılarını da fark edip kendini takdir etmeni istiyorum.", "Matematikte geri kalmışlık hissi geçicidir; düzenli çalışmayla bu hissin ortadan kalktığını göreceksin.", "Ders sonrası destek çalışmalarına katılman da eksiklerini hızla kapatmana yardımcı olacaktır.", "Çalışma saatlerinde telefon ve televizyon gibi dikkat dağıtıcılardan uzak kalmanı öneriyorum.", "Birlikte belirleyeceğimiz küçük hedeflerle ilerlemeni adım adım takip edeceğiz.", "Anlamadığın bir konuyu açıkça söylemek zayıflık değil, öğrenmenin en akıllıca yoludur.", "Her hafta bir önceki haftaya göre küçük bir ilerleme kaydetmeyi hedeflemelisin.", "Ailenin de çalışmalarını takip etmesi, düzenli tekrar alışkanlığı kazanmanı kolaylaştıracaktır."], "close": ["Birlikte çalışarak bu eksikleri kapatacağımıza ve sonuçlarının yükseleceğine yürekten inanıyorum.", "Her zaman yanındayım; çabanı artırdığında başarı seni mutlaka bulacaktır.", "Kendine inanmanı ve vazgeçmeden çalışmanı bekliyorum; başaracağından eminim.", "Bu dönemi bir başlangıç olarak görüp bir sonraki sınavda çok daha iyi sonuçlar elde edeceğine inanıyorum.", "Sana güveniyor, düzenli çalışmanın karşılığını yakında alacağına yürekten inanıyorum.", "Azim ve düzenle çok daha iyi bir noktaya geleceğine olan inancım tam."], "resource": ["Ders fasiküllerindeki temel düzey soruları sırayla çözmen, eksik kalan kazanımlarını kapatmana yardımcı olacaktır.", "MEB kitabındaki konu anlatımlarını okuyup örnek soruları kendi başına çözmen, konuları temelden kavramanı sağlayacaktır.", "Ders fasiküllerinden ve MEB kitabından yararlanarak yapacağın düzenli tekrarlar eksiklerini kapatmana yardımcı olacaktır.", "EBA dijital platformundaki konu anlatım videolarını izleyip ardından ilgili soruları çözmen öğrenmeni pekiştirecektir.", "MEB kitabındaki alıştırmaları kolaydan zora doğru sırayla çözmen konulara hakimiyetini artıracaktır.", "Ders fasiküllerindeki işlenmiş örnekleri incelemen ve benzerlerini kendin çözmen işlem becerini güçlendirecektir.", "EBA üzerindeki etkileşimli içerikleri kullanman, derste anlamadığın konuları farklı bir anlatımla görmeni sağlayacaktır.", "Fasiküllerdeki kazanım değerlendirme sorularını çözerek eksik olduğun konuları belirlemeni öneriyorum.", "MEB kitabındaki ünite sonu değerlendirme sorularını çözmen, hangi konuları tekrar etmen gerektiğini görmeni sağlayacaktır.", "EBA'daki konu tekrarı içeriklerini her gün kısa süreli izleyip not alman, bilgilerini kalıcı hale getirecektir.", "Fasikülde çözdüğün soruların yanlışlarını ayrı bir deftere yazıp tekrar çözmen öğrenmeni kalıcı hale getirecektir.", "Sebit dijital platformundaki içeriklerle yapacağın günlük tekrarlar bilgilerini kalıcı hale getirecektir.", "EBA'daki çözümlü soruları inceleyip ardından benzer soruları fasiküllerden çözmen öğrenmeni hızlandıracaktır.", "MEB kitabı ve ders fasikülleri eşliğinde her gün birkaç soru çözmen matematik özgüvenini artıracaktır.", "EBA platformundaki konu testlerini çözerek kendini kontrol etmen eksiklerini erken görmeni sağlayacaktır.", "Sebit platformundaki konu tekrarlarını fasiküllerdeki sorularla birlikte çalışman eksiklerini hızla kapatmanı sağlayacaktır."]}, {"open": ["Matematik dersinde temel kazanımlara büyük ölçüde hakimsin; ancak soru çeşitliliği arttıkça tutarlılığını korumakta zorlanıyorsun.", "Dersteki performansın yer yer çok iyi, yer yer ise geliştirilmesi gereken düzeyde; bu dalgalanmayı düzenli çalışmayla dengeleyebilirsin.", "Derslerde sorumluluklarını yerine getirmen güzel; şimdi bu çabayı daha sistemli bir çalışma düzenine dönüştürme zamanı.", "Bazı konuları çok iyi kavradığını, bazılarında ise pekiştirmeye ihtiyaç duyduğunu görüyorum.", "Sınav sonuçların doğru yolda olduğunu ama biraz daha emek vermen gerektiğini gösteriyor.", "Matematiğe yönelik ilgin ve merakın var; bu merakı düzenli soru çözümüyle desteklemen yeterli olacaktır.", "Derslerde dikkatini daha uzun süre koruyabildiğinde başarı seviyenin hızla yükseleceğini düşünüyorum.", "Yaptığın işlemlerde mantığı doğru kuruyorsun; küçük dikkat hataları puan kaybetmene neden oluyor."], "study": ["Her gün en az on soru çözerek hem hızını hem de doğruluğunu artırmalısın.", "Çözdüğün soruların yanlışlarını ayrı bir not defterinde toplayıp haftada bir yeniden çözmelisin.", "Sınavlardan önce konu özetleri çıkararak kuralları kendi cümlelerinle yazmalısın.", "Soruyu okuduktan sonra ne istendiğini kendi cümlenle ifade etme alışkanlığı kazanmalısın.", "Çözümlerini adım adım ve düzenli yazman hem hataları görmeni hem de puan kaybını önlemeni sağlayacaktır.", "Zorlandığın konularda önce temel soruları, sonra daha zor soruları çözerek ilerlemelisin.", "Derste çözülen soruları evde tekrar çözmeni ve farklı çözüm yollarını da denemeni öneriyorum.", "Konu bitiminde kendi kendine mini bir test hazırlayıp çözmen eksiklerini görmeni sağlayacaktır."], "extra": ["Matematikteki başarının en büyük anahtarı düzenli çalışma olduğu için küçük ama sürekli bir tempo yakalamalısın.", "Hatalarının nedenlerini bulduğunda aynı hataları tekrarlamayacağını sen de göreceksin.", "Sınıf içi etkinliklerde düşüncelerini paylaşman konuları daha iyi kavramana destek olacaktır.", "Kendine uygun bir çalışma saati belirleyip buna sadık kaldığında ilerlemeni hızla fark edeceksin.", "Hedeflerini yazılı hale getirmen motivasyonunu yüksek tutmana yardımcı olacaktır.", "Zorlandığın noktada vazgeçmek yerine öğretmeninden destek istemen en doğru adım olacaktır.", "Biraz daha dikkat ve düzenle çok daha yüksek bir seviyeye çıkabilecek potansiyele sahipsin.", "Çalışmalarını sabit bir takvime bağladığında hem zamanını daha verimli kullanacak hem de daha az zorlanacaksın."], "close": ["Düzenli çabayla bir sonraki sınavda çok daha iyi bir sonuç alacağına inanıyorum.", "Potansiyelinin farkındayım; biraz daha emekle başarının artacağına yürekten inanıyorum.", "Bu yolda sana destek olmaya devam edeceğim; başarılarının artarak sürmesini diliyorum.", "Gösterdiğin çabanın karşılığını yakında alacağına ve başarının yükseleceğine inanıyorum.", "Kararlılıkla çalıştığında hedeflerine ulaşacağına inancım tam.", "Seni daha iyi bir noktada görmek için sabırsızlanıyor, başarılar diliyorum."], "resource": ["Ders fasiküllerindeki orta düzey soruları düzenli çözmen konulara olan hakimiyetini artıracaktır.", "MEB kitabındaki örnek çözümleri inceleyip benzer soruları kendin çözmen öğrenmeni pekiştirecektir.", "Ders fasiküllerinden ve MEB kitabından yapacağın düzenli çalışmalar konuları daha kalıcı hale getirecektir.", "EBA platformundaki testleri çözerek kendini düzenli aralıklarla değerlendirmen eksiklerini görmeni kolaylaştıracaktır.", "MEB kitabındaki ünite sonu soruları ve fasikül çalışmalarını birlikte yürütmen farklı soru tiplerini tanımanı sağlayacaktır.", "EBA'daki konu anlatımlarını ve çözümlü soruları takip etmen anlamadığın noktaları netleştirmene yardımcı olacaktır.", "Fasiküllerdeki kazanım değerlendirme sorularını çözmen eksik kalan konuları belirlemene yardımcı olacaktır.", "MEB kitabındaki problemleri adım adım çözmen işlem becerini ve problem çözme gücünü artıracaktır.", "EBA dijital platformundaki etkileşimli içeriklerle konu tekrarı yapman öğrenmeni çeşitlendirecektir.", "Ders fasiküllerindeki soruları süre tutarak çözmen hem hızını hem de doğruluk oranını artıracaktır.", "Sebit dijital platformundaki içeriklerden yararlanarak konu tekrarları yapman bilgilerini pekiştirmeni sağlayacaktır.", "EBA'daki değerlendirme sorularını çözüp yanlışlarını fasikülden tekrar çalışman eksiklerini kapatmanı sağlayacaktır.", "MEB kitabındaki konu özetlerini okuyup kendi cümlelerinle defterine yazman bilgilerini kalıcı hale getirecektir.", "Fasikülde yaptığın hataları işaretleyip MEB kitabındaki benzer örneklerle tekrar etmen kalıcı öğrenmeni sağlayacaktır.", "EBA üzerindeki konu tekrar videolarını izleyip fasiküldeki ilgili soruları çözmen ilerlemeni hızlandıracaktır.", "Sebit platformundaki konu tekrarlarını ders fasikülleriyle birlikte çalışman ilerlemeni hızlandıracaktır."]}, {"open": ["Matematik dersinde istikrarlı bir performans sergiliyorsun; bu istikrarı bir üst seviyeye taşımak için çok yakınsın.", "Derslerdeki katılımın ve sorumluluk bilincin başarı düzeyine olumlu katkı sağlıyor.", "Konuların çoğunu doğru kavradığını ve işlemlerde başarılı olduğunu görüyorum.", "Düzenli çalışma alışkanlığın sayesinde matematikte güzel bir noktaya geldin.", "Bu dönem gösterdiğin performans, yeteneğinin ve çabanın bir yansıması olarak beni mutlu etti.", "Derste dikkatli bir öğrencisin; küçük dikkat hatalarını azalttığında çok daha yüksek puanlar alabilirsin.", "Matematiğe karşı olumlu tutumun ve öğrenme isteğin takdire değer.", "Başarı grafiğinin yükselişte olduğunu görmek beni sevindiriyor."], "study": ["Çözdüğün sorulardaki yanlışlarını analiz edip aynı tür hataları tekrarlamamaya özen göstermelisin.", "Orta ve zor düzeydeki sorulara daha fazla zaman ayırarak çözüm repertuarını genişletmelisin.", "Sınav öncesinde konuları gözden geçirirken kısa özetler çıkarman ve kuralları tekrar etmen faydalı olacaktır.", "Aynı soruyu farklı yollarla çözmeyi deneyerek konulara olan hakimiyetini derinleştirebilirsin.", "Soruları okurken verilenleri ve istenenleri işaretleme alışkanlığı kazanman dikkat hatalarını azaltacaktır.", "Haftalık tekrar planı yaparak öğrendiğin konuları unutmadan pekiştirmelisin.", "Derste çözülen zor sorulara özellikle dikkat edip evde bu soruları kendin yeniden çözmelisin.", "İşlem sonuçlarını kontrol etme alışkanlığı kazandığında puan kayıplarının azaldığını göreceksin."], "extra": ["Biraz daha çeşitlilikle çalıştığında başarının yukarı doğru ivmelenmeye devam edeceğine eminim.", "Sınıf içi tartışmalarda çözüm yollarını anlatman hem öğrenmeni pekiştirecek hem de arkadaşlarına yardımcı olacaktır.", "Zorlandığın sorularda vazgeçmeden farklı stratejiler denemen problem çözme becerini geliştirecektir.", "Kısa süreli ama düzenli çalışmalar uzun ve nadir çalışmalardan çok daha etkilidir; bu düzeni sürdürmeni öneriyorum.", "Matematikte başarının sırrı, öğrendiğin konuları unutmadan düzenli olarak tekrar etmektir.", "Her sınavdan sonra hatalarını gözden geçirmen bir sonraki sınavda sana avantaj sağlayacaktır.", "Hedeflerini biraz daha yükseğe koyman potansiyelini tam olarak kullanmana yardımcı olacaktır.", "Çalışmalarını planlı bir şekilde sürdürdüğünde başarı düzeyin kolayca bir üst basamağa çıkacaktır."], "close": ["Gelişimini takdirle izliyor, başarılarının artarak devam edeceğine inanıyorum.", "Bu düzenli çalışmanın sonunda hedeflerine ulaşacağına eminim.", "Sana güvenim tam; bu güzel ilerleyişini sürdürmeni diliyorum.", "Azim ve düzenle çok daha yüksek başarılara ulaşacağına yürekten inanıyorum.", "Seni daha da başarılı görmek için sabırsızlanıyorum; çalışmalarında başarılar dilerim.", "Bu çizgiyi koruduğunda matematikte çok daha iyi bir yere geleceğine inanıyorum."], "resource": ["Ders fasiküllerindeki orta ve üst düzey soruları çözmen konulara olan hakimiyetini artıracaktır.", "MEB kitabındaki problemleri ve etkinlikleri eksiksiz çalışman kazanımlardaki eksiklerini tamamlamanı sağlayacaktır.", "MEB kitabı ve fasiküllerle yapacağın düzenli çalışmalar öğrenmeni kalıcı hale getirecektir.", "EBA platformundaki güncel içeriklerden ve testlerden faydalanman farklı soru tiplerine aşina olmanı sağlayacaktır.", "Fasiküllerdeki yeni nesil sorulara ağırlık vermen muhakeme becerini geliştirecektir.", "EBA'daki konu anlatımları ve değerlendirme testleri ile çalışmalarını çeşitlendirmen faydalı olacaktır.", "MEB kitabındaki zorlayıcı soruları fasikül çalışmalarıyla birlikte yürütmen derinlemesine öğrenmeni sağlayacaktır.", "Ders fasiküllerindeki konu tarama testlerini süre tutarak çözmen sınav performansını artıracaktır.", "EBA dijital platformundaki ek içerikleri takip ederek konu tekrarı yapman bilgilerini taze tutacaktır.", "MEB kitabındaki ünite sonu soruları ve fasikül testleriyle kendini düzenli aralıklarla değerlendirmelisin.", "Sebit dijital platformundaki içeriklerden yararlanarak düzenli tekrarlar yapman bilgilerini pekiştirmeni sağlayacaktır.", "Fasiküllerdeki çözümlü örnekleri inceleyip benzer soruları kendin çözmen farklı çözüm yollarını görmeni sağlayacaktır.", "EBA'daki yeni nesil soru örneklerini çözmen sınavlarda karşılaşacağın soru tiplerine hazırlıklı olmanı sağlayacaktır.", "MEB kitabının yanında ders fasiküllerini de düzenli kullanman kazanımlara tam hakimiyet kazanmanı sağlayacaktır.", "Okul sonrasında fasikül sorularıyla yapacağın ek çalışmalar başarı seviyeni yükseltecektir.", "EBA platformundaki konu testlerini çözüp yanlışlarını MEB kitabından tekrar etmen eksiklerini kapatmanı sağlayacaktır."]}, {"open": ["Matematik dersindeki başarın, düzenli çalışma disiplininin ve derse olan ilginin güzel bir sonucu.", "Konulara hakimiyetin ve problem çözme becerin bu dönem çok iyi bir seviyede.", "Derslerdeki katılımın ve sorumluluk bilincin sayesinde sınıfımızın güçlü öğrencilerinden birisin.", "Sınav sonuçların matematikte sağlam bir temele sahip olduğunu açıkça gösteriyor.", "Derslerde gösterdiğin dikkat ve çalışmalarındaki özen başarına doğrudan yansıyor; seni kutluyorum.", "Matematiğe olan ilgin ve çalışkanlığın öğrenme sürecini keyifli bir hale getiriyor.", "Düzenli ve planlı çalışmanın karşılığını aldığını görmek beni çok mutlu ediyor.", "Bu dönemki performansın, yeteneğinin ve emeğinin birleşiminin güzel bir örneği."], "study": ["Küçük dikkat hatalarını ortadan kaldırmak için işlem sonrası sonuç kontrolü yapmalısın.", "Çok adımlı problemler üzerinde çalışarak çözüm stratejilerini çeşitlendirebilirsin.", "Çözüm yollarını arkadaşlarınla karşılaştırman farklı bakış açıları kazanmanı sağlayacaktır.", "Zorluk seviyesi yüksek soruları süre tutarak çözmen sınav performansını daha da iyileştirecektir.", "Öğrendiğin konuları günlük hayatla ilişkilendirmen kalıcılığı ve ilgini artıracaktır.", "Bir konuyu bitirdiğinde o konudan kendi sorularını hazırlaman muhakeme becerini geliştirecektir.", "Başarını korumak için haftalık tekrar planını bozmamalısın.", "Konular arası bağlantıları kurarak çalışman bütünsel bir matematik bakışı kazanmanı sağlayacaktır."], "extra": ["Matematikte bir sonraki adım bildiklerini başkalarına anlatabilecek düzeye gelmektir; bunu denemeni öneriyorum.", "Meraklı yapınla farklı problem türlerine yönelmen seni daha da ileri taşıyacaktır.", "Başarına rağmen hata yapmaktan çekinmeden zor sorulara da yönelmelisin.", "Bu düzeyi korumak için çalışma alışkanlığını bozmaman yeterli olacaktır.", "Sınav anında zamanını iyi yönetmen bilginin puana dönüşmesini kolaylaştıracaktır.", "Hedeflerini bir üst seviyeye taşıdığında potansiyelinin sınırlarını daha net göreceksin.", "Ek problemler çözmek matematik gücünü daha da artıracaktır.", "Arkadaşlarınla birlikte çalışman hem onlara hem sana fayda sağlayacaktır."], "close": ["Başarılarının devam edeceğine ve daha da yükseleceğine yürekten inanıyorum.", "Bu güzel çalışmanın devamında seni daha yüksek başarılar bekliyor; tebrik ediyorum.", "Sana güveniyor, gelişiminin artarak sürmesini içtenlikle diliyorum.", "Azmin ve düzenli çalışmanla hedeflerine ulaşacağına inancım tam.", "Emeklerinin karşılığını almaya devam edeceğine eminim.", "Seninle gurur duyuyor, başarılarının devamını diliyorum."], "resource": ["Fasiküllerdeki üst düzey soruları ve yeni nesil soruları çözmen çözüm becerilerini geliştirecektir.", "MEB kitabındaki zorlayıcı soruları ve fasikül çalışmalarını birlikte yürütmen derinlemesine öğrenmeni sağlayacaktır.", "EBA platformundaki güncel içeriklerden ve testlerden faydalanman farklı soru tiplerinde pratik kazanmanı sağlayacaktır.", "Ders fasiküllerindeki deneme tarzı testleri süre tutarak çözmen sınav performansını destekleyecektir.", "MEB kitabındaki problem çözme etkinliklerini farklı yöntemlerle yeniden çözmen kavrayışını derinleştirecektir.", "EBA'daki ileri düzey içerikler ve değerlendirme testleri çalışmalarını çeşitlendirmen için iyi bir fırsat sunuyor.", "Fasiküllerdeki çok adımlı problemleri çözmen analitik düşünme becerini geliştirecektir.", "EBA dijital platformundaki yeni nesil soru örneklerini çözmen sınav tarzına hakimiyetini artıracaktır.", "MEB kitabı ve fasiküllerdeki konu sonu sorularını eksiksiz çözmen bu başarını kalıcı hale getirecektir.", "Sebit dijital platformundaki içeriklerden yararlanarak yapacağın düzenli tekrarlar bilgilerini pekiştirmene destek olacaktır.", "Fasiküllerdeki soru çeşitliliği farklı soru kalıplarına aşina olmanı sağlayacaktır.", "EBA'daki konu anlatımlarını bir tekrar kaynağı olarak kullanman bilgilerini taze tutmanı sağlayacaktır.", "MEB kitabındaki örnekleri inceleyip kendi sorularını yazman matematiksel düşünme becerini geliştirecektir.", "Okul sonrasında fasikül sorularıyla yapacağın ek çalışmalar başarı seviyeni daha da yükseltecektir.", "EBA'daki değerlendirme testlerini çözüp yanlışlarını fasikül ve MEB kitabıyla tekrar etmen eksiklerini tamamlamanı sağlayacaktır.", "Dijital platformlardaki ek kaynaklar ve fasikül soruları konular arası bağlantıları görmeni kolaylaştıracaktır."]}, {"open": ["Matematik dersindeki üstün başarın düzenli çalışmanın ve gerçek bir ilginin sonucu; seni içtenlikle kutluyorum.", "Konulara hakimiyetin ve problem çözmedeki ustalığın bu dönem gerçekten dikkat çekiciydi.", "Derslerdeki yüksek motivasyonun ve çalışma disiplinin sınıf arkadaşların için güzel bir örnek.", "Sınavlardaki başarın bilgiyi uygulamadaki becerinin güzel bir göstergesi.", "Bu dönem elde ettiğin sonuçlar emeğinin ve azminin hakkıyla karşılığını aldığını gösteriyor.", "Matematiğe duyduğun ilgi ve merak seni sürekli geliştiren en büyük gücün.", "Derslerde sorgulayıcı ve araştırmacı yaklaşımın öğrenme sürecini çok daha anlamlı hale getiriyor.", "Bu başarı düzeyini sürdürmek ve geliştirmek için gösterdiğin çaba gerçekten takdire değer."], "study": ["Çok adımlı ve üst düzey problemler üzerinde çalışarak muhakeme becerini daha da geliştirebilirsin.", "Bir problemi birden fazla yoldan çözmeyi deneyerek çözüm esnekliğini artırabilirsin.", "Kendi problemini kurup arkadaşlarına sormak konuya hakimiyetini ve yaratıcılığını güçlendirecektir.", "Süre yönetimi ve dikkat kontrolü üzerine çalışarak sınavlarda küçük puan kayıplarını önleyebilirsin.", "Konuları günlük hayattaki örneklerle ilişkilendirmen matematiksel düşünme becerini zenginleştirecektir.", "Zor ve alışılmadık sorularla uğraşman gelişimini sürdürmeni sağlayacaktır.", "Öğrendiğin konuları periyodik olarak tekrar edip bilgilerini taze tutmayı ihmal etmemelisin.", "Sınıf içi etkinliklerde arkadaşlarına konu anlatman bilgini pekiştirecektir."], "extra": ["Başarının en güzel yanı arkadaşlarına örnek olman ve onlara destek vermen.", "Matematik yolculuğunda merakını hiç kaybetmemen seni çok daha yükseklere taşıyacaktır.", "Önümüzdeki dönemlerde daha zorlu problemlerle karşılaştığında aynı kararlılığı göstereceğine inanıyorum.", "Başarını sadece notla değil, öğrenmenin keyfiyle de ölçmeni istiyorum.", "Sınıfımıza kattığın pozitif enerji için sana teşekkür ediyorum.", "Bu düzeyi korumak için dinlenme ve çalışma dengesini iyi kurmalısın.", "Kendine yeni hedefler belirleyerek matematik yolculuğunda bir adım daha ileri gidebilirsin.", "Bilgini paylaşmak bilgini pekiştirmenin en güzel yoludur."], "close": ["Seninle çalışmaktan büyük keyif alıyorum; başarılarının devamını içtenlikle diliyorum.", "Parlak bir geleceğin olduğuna yürekten inanıyor, seni tebrik ediyorum.", "Bu çabayla çok daha yükseklere çıkacağından hiç şüphem yok.", "Gösterdiğin başarıdan dolayı seninle gurur duyuyorum; yolun açık olsun.", "Azmin ve merakınla çok başarılı sonuçlara imza atacağına inanıyorum.", "Sana güveniyor, başarılarının katlanarak artacağına yürekten inanıyorum."], "resource": ["Fasiküllerdeki üst düzey ve yeni nesil soruları çözerek kendini sürekli geliştirebilirsin.", "MEB kitabındaki zorlayıcı soruların yanı sıra fasiküllerdeki ileri düzey soruları da çözmeni öneriyorum.", "EBA platformundaki güncel içeriklerden faydalanarak farklı soru tipleri üzerinde pratik yapman deneme sınavlarında seni çok daha ileriye taşıyacaktır.", "Ders fasiküllerindeki deneme tarzı testleri süre tutarak çözmen sınav performansını destekleyecektir.", "EBA'daki ileri düzey içerikler merakını ve başarını besleyecektir.", "MEB kitabındaki problem çözme etkinliklerini farklı yöntemlerle çözmeye çalışman çözüm becerini zenginleştirecektir.", "Fasiküllerdeki çok adımlı problemler analitik düşünme gücünü daha da geliştirecektir.", "EBA'daki değerlendirme testlerini süre tutarak çözmen sınav performansını destekleyecektir.", "MEB kitabının yanı sıra farklı kaynaklardan da soru çözmen bakış açını zenginleştirecektir.", "Sebit dijital platformundaki içeriklerden yararlanmanın yanı sıra fasiküllerdeki üst düzey soruları çözmeni öneriyorum.", "Fasiküllerdeki farklı zorluk seviyelerindeki soruları çözerek kendini sürekli sınaman sana avantaj sağlayacaktır.", "EBA üzerindeki yeni nesil soru örnekleri sınav tarzına hakimiyetini artıracaktır.", "MEB kitabı ve fasikül çalışmalarını düzenli sürdürmen bu başarını kalıcı hale getirecektir.", "EBA'daki konu anlatımlarını arkadaşlarına anlatır gibi tekrar etmen bilgilerini pekiştirecektir.", "Fasikül ve MEB kitabındaki sorularla EBA'daki testleri birlikte kullanman çalışmalarını çeşitlendirmeni sağlayacaktır.", "Sebit ve EBA platformlarındaki farklı düzeydeki soruları çözerek kendini sürekli geliştirebilirsin."]}];
+EXTRA.forEach((e,i) => { ["open","study","extra","close"].forEach(k => { POOL[i][k] = POOL[i][k].concat(e[k]); }); POOL[i].resource = e.resource; });
+
+/* ---------- Ek vurgu cümleleri ---------- */
+const TAGLIST = [["gelisim", "Gelişim gösteriyor", "Olumlu", ["Son zamanlarda derslerdeki tutumunda ve çabanda olumlu bir gelişim görmek beni gerçekten mutlu ediyor.", "Son dönemde gösterdiğin gelişim çok sevindirici; bu olumlu sürecin devam etmesini istiyorum.", "Derse olan ilginin ve kendine güveninin arttığını gözlemliyorum, bu gelişim çok değerli.", "Son süreçte gösterdiğin ilerleme çabanın karşılığını aldığını gösteriyor.", "Derslerdeki gayretin her geçen hafta artıyor; bu güzel gidişatı sürdürmeni bekliyorum.", "Gelişimini yakından izliyorum ve emeklerinin karşılığını almaya başladığını görüyorum."]], ["istikrar", "İstikrarlı çalışıyor", "Olumlu", ["Düzenli ve istikrarlı çalışmaların sayesinde başarın her geçen gün artıyor.", "Derslere her zaman hazırlıklı gelmen ve sorumluluklarını yerine getirmen çok değerli.", "İstikrarlı çalışma tarzın matematikteki başarının en sağlam temeli.", "Ders içi ve ders dışı çalışmalarındaki düzenin başarına olumlu yansıdığını görüyorum.", "Disiplinli ve planlı çalışma alışkanlığın örnek alınacak düzeyde.", "Derslerdeki sürekliliğin ve özenin takdire değer."]], ["merak", "Meraklı ve sorgulayıcı", "Olumlu", ["Sorgulayıcı ve meraklı yapınla konuları derinlemesine anlamaya çalışman gerçekten değerli.", "Neden ve nasıl sorularını sormaktan çekinmemen öğrenmeni çok daha kalıcı hale getiriyor.", "Matematiğe duyduğun merak seni farklı çözüm yollarını denemeye yönlendiriyor.", "Derste sorduğun sorular konuyu ne kadar derinlemesine düşündüğünü gösteriyor.", "Araştırmacı ve meraklı tutumunu korumak seni her zaman ileriye taşıyacaktır.", "Yeni bilgileri öğrenme isteğin ve meraklı yapın sınıfa da güzel bir enerji katıyor."]], ["yardim", "Arkadaşlarına yardım ediyor", "Olumlu", ["Arkadaşlarına yardım etmen ve bilgini paylaşman sınıfımıza değer katıyor.", "Sınıf içinde işbirliğine açık olman ve arkadaşlarını desteklemen çok takdire değer.", "Anlamakta zorlanan arkadaşlarına konuyu anlatman hem onlara hem sana fayda sağlıyor.", "Grup çalışmalarında sorumluluk alman ve ekip ruhuyla hareket etmen güzel bir özelliğin.", "Sınıf içi olumlu iletişimin ve yardımseverliğin öğrenme ortamına güzel bir atmosfer katıyor.", "Arkadaşlarınla saygılı ve destekleyici ilişkin sınıf ortamımıza çok katkı sağlıyor."]], ["sessiz", "Sakin ve sessiz", "Olumlu", ["Derslerde sakin ve sessiz bir öğrencisin; yine de konuları dikkatle dinleyip takip etmen çok değerli.", "Sessiz ama dikkatli takibin öğrenme sürecine gösterdiğin samimi ilgiyi yansıtıyor.", "Sakin tutumunla konuları derinlemesine anlamaya çalışıyorsun; bu özelliğin çok kıymetli.", "Derslerde sessiz olsan da konuları dikkatle izlediğini görüyorum; anlamadığın yerleri sormaktan çekinmemelisin.", "Sakin ve düzenli bir öğrencisin; fikirlerini zaman zaman paylaşman sınıfa da katkı sağlayacaktır.", "Sessiz ama kararlı çalışma tarzın matematikte sana büyük avantaj sağlıyor."]], ["katilim", "Derse katılımı artırmalı", "Gelişim alanı", ["Sınıf içi etkinliklerde daha aktif katılım göstermeye özen göstermelisin; fikirlerini paylaşman öğrenmeni ve kendini ifade etme becerini güçlendirecektir.", "Derslerde fikirlerini daha sık paylaşman ve etkinliklere aktif katılman potansiyelini çok daha iyi yansıtmanı sağlayacaktır.", "Sessizliğini zaman zaman bozup derse katılım sağladığında konuları çok daha kalıcı öğreneceksin.", "Derse daha aktif katılıp tahtaya kalkmaktan ve sorulara cevap vermekten çekinmemelisin.", "Bilgilerin yeterli; bunları sınıf içinde paylaşmak hem özgüvenini hem de öğrenmeni güçlendirecektir.", "Derse katılım gösterdiğinde konuları daha kolay anlayacağını ve kalıcı öğreneceğini unutma."]], ["dikkat", "Dikkatini odaklamalı", "Gelişim alanı", ["Zaman zaman dikkatinin dağıldığını fark ediyorum; derse daha uzun süre odaklanman konuları daha iyi kavramanı sağlayacaktır.", "Derste dikkatini sürdürmek öğrenmenin en önemli adımlarından biridir; bu konuda biraz daha özen göstermeni bekliyorum.", "Dikkatini derse yönelttiğinde ve anlamadığın noktaları sorduğunda başarının hızla yükseldiğini göreceksin.", "Ders sırasında dikkatini dağıtacak durumlardan uzak durup anlatılanlara odaklanman çok önemli.", "Derste not tutmak ve örnekleri takip etmek dikkatini canlı tutmana yardımcı olacaktır.", "Derse tam konsantre olduğunda ne kadar başarılı olabileceğini kendin de göreceksin."]], ["odev", "Ödevlerini düzenli yapmalı", "Gelişim alanı", ["Ödevlerini ve görevlerini düzenli ve özenli biçimde tamamlamaya dikkat etmelisin.", "Günlük planını daha iyi yapmalı ve ödevlerini eksiksiz teslim etmelisin.", "Verilen çalışmaları zamanında yapman öğrenmenin kalıcı olması için çok önemli.", "Ödev ve çalışma kâğıtlarını eksiksiz yapman öğrendiklerini pekiştirmenin en kolay yoludur.", "Verilen görevleri son güne bırakmadan düzenli tamamlaman öğrenmeni olumlu etkileyecektir.", "Ödevlerindeki özen sınav başarına da yansıyacaktır; bu konuda daha titiz olmanı bekliyorum."]], ["ozguven", "Özgüvenini artırmalı", "Gelişim alanı", ["Kendine daha çok güvenmeni istiyorum; yaptığın her doğru işlem potansiyelinin kanıtı.", "Bildiğin konularda çekinmeden söz alman ve çözümlerini paylaşman özgüvenini güçlendirecektir.", "Hata yapmaktan korkmadan denemen öğrenme sürecinin en değerli parçasıdır.", "Yapabildiğin sorulara baktığında potansiyelinin ne kadar yüksek olduğunu görüyorum; bunu sen de görmelisin.", "Kendi çözümüne güvenerek ilerlemen ve cevabını savunabilmen özgüvenini artıracaktır.", "Başarısızlık hissi geçicidir; her denemen seni daha güçlü yapıyor."]], ["motivasyon", "Motivasyonunu yükseltmeli", "Gelişim alanı", ["Matematiğe olan ilgini ve motivasyonunu yükselttiğinde başarının da hızla artacağına inanıyorum.", "Kendine küçük hedefler koyup bunlara ulaştıkça motivasyonunun yükseldiğini göreceksin.", "Derse daha istekli yaklaşman öğrenme sürecini çok daha keyifli hale getirecektir.", "Her başarını fark etmen ve kendini ödüllendirmen motivasyonunu yüksek tutacaktır.", "Matematikte zorlandığında vazgeçmemen ve denemeye devam etmen gelişiminin anahtarı olacaktır.", "Derse olan ilgini ve çabanı artırdığında bu başarıdan çok daha fazlasını yapabileceğini göreceksin."]], ["hazirlik", "Derse hazırlıklı gelmeli", "Gelişim alanı", ["Derse gerekli araç gereçlerinle ve hazırlıklı gelmen derste daha verimli olmanı sağlayacaktır.", "Derse gelmeden önce bir önceki dersin konusunu kısaca gözden geçirmen öğrenmeni kolaylaştıracaktır.", "Kitap, defter ve fasikülünü derse düzenli getirmen öğrenme sürecini daha verimli hale getirecektir.", "Ders öncesi hazırlığa özen göstermen derste anlatılanları çok daha rahat takip etmeni sağlayacaktır.", "Ders materyallerini eksiksiz bulundurman derse daha aktif katılmanı sağlayacaktır.", "Derse hazırlıklı gelmek başarının en basit ve etkili adımlarından biridir."]], ["tekrar", "Düzenli tekrar yapmalı", "Gelişim alanı", ["Öğrendiğin konuları unutmamak için her hafta kısa süreli tekrarlar yapmalısın.", "Konu tekrarlarını sınav haftasına bırakmadan düzenli aralıklarla yapman bilgilerini kalıcı hale getirecektir.", "Her gün derste işlediğimiz konuyu on beş dakika gözden geçirmen öğrenmeni çok güçlendirecektir.", "Geriye dönük kısa tekrarlar matematikte bilgilerin kalıcı olmasının en etkili yoludur.", "Düzenli tekrar alışkanlığı kazandığında soruları çok daha rahat çözdüğünü göreceksin.", "Bir konuyu bitirdikten birkaç gün sonra yeniden çalışman unutmanı engelleyecektir."]], ["soru", "Soru sormalı, destek almalı", "Gelişim alanı", ["Anlamadığın noktaları sormaktan çekinme; sorulan her soru öğrenmenin bir parçasıdır.", "Takıldığın sorularda öğretmeninden destek almak en hızlı çözüm yoludur.", "Derste anlamadığın bir yer olduğunda hemen el kaldırıp sormaya özen göstermelisin.", "Zorlandığın konularda arkadaşlarınla ve öğretmeninle konuşarak çözüm bulmaya çalışmalısın.", "Soru sormak zayıflık değil, öğrenme isteğinin göstergesidir; bu konuda daha rahat olmanı istiyorum.", "Ders arasında veya sonrasında takıldığın soruları bana sorabilirsin; her zaman destek olmaya hazırım."]], ["islem", "İşlem hatalarına dikkat etmeli", "Gelişim alanı", ["İşlem hatalarını azaltmak için çözümlerini adım adım ve düzenli yazmaya özen göstermelisin.", "Sonucu bulduktan sonra işlemlerini kısaca kontrol etmen puan kaybını önleyecektir.", "İşlemlerde yaptığın küçük hataların farkına varıp bunlara dikkat etmen başarını belirgin biçimde artıracaktır.", "Hızlı çözmeye çalışırken yaptığın dikkat hataları bildiğin soruların yanlış olmasına neden oluyor.", "İşlem sırasına ve işaretlere dikkat etmen hataları azaltacaktır.", "Çözümünü temiz ve okunaklı yazman hatalarını görmeni de kolaylaştıracaktır."]], ["defter", "Defter ve not tutma", "Gelişim alanı", ["Defterini düzenli tutman ve derste yapılan örnekleri eksiksiz yazman çalışmalarını kolaylaştıracaktır.", "Ders notlarını düzenli tutman tekrar yaparken sana çok yardımcı olacaktır.", "Derste çözülen soruları defterine kendi cümlelerinle yazman öğrenmeni kalıcı hale getirecektir.", "Defterindeki not ve çözümleri sınav öncesi gözden geçirmen seni çok rahatlatacaktır.", "Not tutma alışkanlığını biraz daha güçlendirmen öğrendiklerini pekiştirmeni sağlayacaktır.", "Düzenli ve temiz bir defter düzenli bir düşünme biçiminin yansımasıdır; bu konuda daha özenli olmanı bekliyorum."]], ["problem", "Problem çözme becerisi", "Gelişim alanı", ["Problem çözerken önce verilenleri ve istenenleri yazman çözüm yolunu bulmanı kolaylaştıracaktır.", "Problemlerde şekil veya tablo çizerek ilerlemen çözümü daha net görmeni sağlayacaktır.", "Farklı tipte problemleri çözerek çözüm stratejilerini çeşitlendirmelisin.", "Problem metnini dikkatle okuyup anahtar bilgileri işaretlemen doğru çözüme ulaşmanı sağlayacaktır.", "Problem çözme becerini geliştirmek için her gün bir problem çözme alışkanlığı edinmelisin.", "Bir problemi çözemediğinde bırakmak yerine farklı bir yol denemen problem çözme gücünü artıracaktır."]], ["yeninesil", "Yeni nesil sorulara çalışmalı", "Gelişim alanı", ["Yeni nesil sorular üzerinde daha fazla pratik yapman muhakeme ve problem çözme becerilerini geliştirecektir.", "Soruyu dikkatle okuyup verilenleri ayırarak çözüme başlamak yeni nesil sorularda sana büyük kolaylık sağlayacaktır.", "Yeni nesil soruları süre tutarak çözmen hem hızını hem de özgüvenini artıracaktır.", "Yeni nesil sorularda önce senaryoyu anlamaya odaklanman ve verilen bilgileri ayrıştırman çözümü kolaylaştıracaktır.", "Farklı bağlamlarda sorulmuş problemler üzerinde çalışman muhakeme becerini artıracaktır.", "Şekil ve tablo okuma becerini geliştirmen yeni nesil sorularda sınav başarına doğrudan katkı sağlayacaktır."]], ["hiz", "Süre ve hız kazanmalı", "Gelişim alanı", ["Sınavlarda zamanı verimli kullanmak için soruları süre tutarak çözmelisin.", "İşlem hızını artırmak için kısa ve düzenli alıştırmalar yapman faydalı olacaktır.", "Bildiğin soruları hızlı çözüp zor soruları sona bırakman süreni verimli kullanmanı sağlayacaktır.", "Zaman yönetimi konusunda çalışman bildiğin soruların puana dönüşmesini sağlayacaktır.", "Soru çözme hızını artırmak için önce doğruluğa odaklanıp ardından süre tutmalısın.", "Sınav sırasında takıldığın soruda uzun süre kalmamak sınavını daha iyi yönetmeni sağlayacaktır."]], ["sinav", "Sınav stratejisi", "Gelişim alanı", ["Sınavlarda sakin kalıp soruları dikkatlice okuman bildiğini gösterebilmen için çok önemli.", "Sınav öncesinde yeterli uyku ve düzenli tekrarla hazırlanman performansını olumlu etkileyecektir.", "Sınavda önce bildiğin sorulardan başlayıp zor soruları sona bırakman süre yönetimini kolaylaştıracaktır.", "Sınav heyecanını azaltmak için bol bol soru çözmen ve soru tiplerine aşina olman faydalı olacaktır.", "Sınav sonunda cevaplarını kontrol etmek için kendine mutlaka zaman bırakmalısın.", "Sınav sonrası hatalarını inceleyip nedenlerini bulman bir sonraki sınavda sana avantaj sağlayacaktır."]], ["kazanim", "Kazanım eksiklerini kapatmalı", "Gelişim alanı", ["Kazanım karnında yer alan eksik konularını belirleyip bunları sırayla tamamlaman başarını artıracaktır.", "Hangi kazanımlarda eksiğin olduğunu bilmen çalışmalarını doğru yönlendirmeni sağlayacaktır.", "Kazanım eksiklerini kapatmak için öncelikle temel konulara dönüp tekrar etmen faydalı olacaktır.", "Eksik kazanımlarını fark etmen ilk adım; şimdi bunları adım adım tamamlama zamanı.", "Kazanım karnındaki eksik konularını sırayla çalışman bir sonraki sınavda sana büyük avantaj sağlayacaktır.", "Eksik kalan kazanımlar üst konulardaki başarını etkiliyor; bu yüzden önce temeli sağlamlaştırmalısın."]], ["kitap", "MEB kitabı ve fasikül çalışmalı", "Kaynak önerisi", ["MEB kitabındaki konu anlatımlarını ve örnekleri düzenli çalışman temel bilgilerini sağlamlaştıracaktır.", "Ders fasiküllerindeki soruları konu konu çözmen kazanımlardaki hakimiyetini artıracaktır.", "MEB kitabı ve fasikülü birlikte kullanman hem konuyu öğrenmeni hem de soruyla pekiştirmeni sağlayacaktır.", "Fasikülündeki soruları düzenli çözüp yanlışlarını işaretleyerek tekrar etmen kalıcı öğrenme sağlayacaktır.", "MEB kitabındaki örnek çözümleri incelemen işlem adımlarını doğru kurmanı kolaylaştıracaktır.", "Ders fasiküllerini ve MEB kitabını eksiksiz çalışman başarının en sağlam yoludur."]], ["eba", "EBA'dan çalışmalı", "Kaynak önerisi", ["EBA dijital platformundaki konu anlatım videolarını ve testleri düzenli takip etmen öğrenmeni destekleyecektir.", "Derste anlamadığın konuları EBA üzerindeki içeriklerle tekrar izleyip pekiştirmen faydalı olacaktır.", "EBA'daki çözümlü sorular ve etkileşimli içerikler çalışmalarını çeşitlendirmene yardımcı olacaktır.", "Haftada birkaç gün EBA platformundan konu tekrarı yapman bilgilerini taze tutacaktır.", "EBA'daki değerlendirme testlerini çözmen eksiklerini erken fark etmeni sağlayacaktır.", "Ders sonrasında EBA içeriklerinden yararlanarak yapacağın düzenli çalışmalar öğrenmeni pekiştirecektir."]]];
+const TAGS = {}; TAGLIST.forEach(x => { TAGS[x[0]] = {label:x[1], g:x[2], s:x[3]}; });
+
+/* ---------- ALİS (öğretmenler arası bilgi aktarımı) ---------- */
+const APOOL = [{"A": ["Matematik becerisi sınıf ve yaş seviyesinin altındadır.", "Matematiksel becerilerde sınıf ve yaş seviyesinin gerisindedir.", "Temel matematik becerilerinde önemli eksiklikler bulunmaktadır.", "Sayı ve işlem becerisi yaş seviyesinin altındadır.", "Kazanımların büyük bölümünde eksikleri bulunmaktadır.", "Matematik dersindeki performansı beklenen düzeyin altındadır."], "B": ["Problem çözme ve matematiksel muhakeme becerilerinde belirgin güçlük yaşamaktadır.", "Soruyu okuyup anlama ve işlem adımlarını kurma aşamasında desteğe ihtiyaç duymaktadır.", "Temel işlemlerde hata yapmakta ve işlem hızı düşük kalmaktadır.", "Önceki yıllara ait kazanımlarda eksikleri bulunmaktadır.", "Dört işlem ve temel kavramlarda pekiştirmeye ihtiyaç duymaktadır.", "Görsel ve grafik içeren sorularda zorlanmaktadır."], "C": ["Sınıf seviye derslerine geçmeden önce, matematikteki en temel becerileri ile ilgili eksikleri giderecek ön hazırlık çalışmaları yapılmalıdır.", "Destek eğitim ve etüt çalışmalarına yönlendirilmesi önerilir.", "Temel kazanımları pekiştirecek bireysel çalışmalarla desteklenmelidir.", "Önceki sınıf kazanımlarını tamamlamaya yönelik telafi çalışmaları yapılmalıdır.", "Veli ile iş birliği yapılarak düzenli evde tekrar çalışması planlanmalıdır.", "Kısa süreli ve sık tekrarlı temel beceri çalışmalarıyla desteklenmelidir."]}, {"A": ["Sayı ve işlem becerisi yaş seviyesindedir.", "Matematik becerisi sınıf ve yaş seviyesindedir.", "Kazanım bilgisi ölçen sorularda başarılıdır.", "Temel işlem becerisi yaş seviyesinde olup diğer matematiksel becerilerde gelişime ihtiyaç duymaktadır.", "Matematikteki performansı sınıf ortalaması düzeyindedir.", "Sayı ve işlem becerisi yeterli düzeydedir."], "B": ["Ancak diğer matematiksel becerilerde gelişmesi gerekmektedir.", "Problem çözme ve matematiksel muhakeme becerilerinde desteğe ihtiyaç duymaktadır.", "Veri ve grafik yorumlama ile uzamsal şekil becerilerinin geliştirilmesi gerekmektedir.", "Soruyu anlama ve çözüm yolunu belirleme aşamasında zorlanmaktadır.", "Matematiğe daha fazla vakit ayırdığında başarısı artabilir.", "Yeni nesil sorularda zorlanmakta, işlem adımlarını düzenli yazmakta güçlük çekmektedir."], "C": ["Kitap okuması, uzamsal şekil yeteneğini geliştirecek görsel içeren sorular sorulup yorumlama çalışmaları yapması desteklenmelidir.", "Düzenli tekrar ve günlük soru çözümüyle desteklenmelidir.", "Soru okuma taktikleri üzerine çalışması ve kazanım eksiklerini tamamlaması önerilir.", "Konu eksiklerini kapatmaya yönelik düzenli çalışma planı yapması desteklenmelidir.", "Matematiğe daha fazla zaman ayırması ve ders içi etkinliklere katılımı teşvik edilmelidir.", "Temel becerilerin pekiştirilmesine yönelik ek çalışmalarla desteklenmelidir."]}, {"A": ["Sayı ve işlem becerisi ile uzamsal şekil becerisi sınıf ve yaş seviyesinin üstündedir.", "Matematik becerisi sınıf ve yaş seviyesinin üzerinde olup gelişime açıktır.", "Temel matematiksel becerilerde yaş seviyesinin üzerinde performans göstermektedir.", "Kazanım bilgisi ölçen sorularda başarılıdır ve genel olarak beklenen düzeyin üzerindedir.", "Matematikteki performansı sınıf ortalamasının üzerindedir.", "Sayı ve işlem becerisinde başarılı olup diğer becerilerde de olumlu bir gelişim göstermektedir."], "B": ["Matematiksel okuryazarlık ve problem çözme becerisinin gelişmesi için desteğe ihtiyaç duyabilir.", "Problem çözerken verilenleri ve istenenleri ayırma becerisi geliştirilebilir.", "Veri ve grafik yorumlama becerilerinde gelişim göstermektedir.", "Yeni nesil sorularda zaman zaman zorlanmaktadır.", "İşlemlerde mantığı doğru kurmakta, ancak dikkat hataları nedeniyle puan kaybetmektedir.", "Uzamsal şekil ve geometrik düşünme becerilerinde başarılıdır."], "C": ["Kitap okuması, soru okuma taktikleri üzerine çalışması desteklenmelidir.", "Düzenli soru çözümü ve konu tekrarıyla başarısı bir üst seviyeye taşınabilir.", "Görsel içeren ve yorum gerektiren sorularla çalışması teşvik edilebilir.", "Gerçek hayat problemleri içeren etkinliklerle desteklenmesi faydalı olacaktır.", "Süre tutarak soru çözmesi ve yeni nesil sorularla çalışması önerilir.", "Zorlandığı soru tipleri üzerinde ek çalışmalar yapması desteklenmelidir."]}, {"A": ["Sayı ve işlem becerisi, matematiksel okuryazarlık ile problem çözme becerisi beklenen düzeyin üzerindedir.", "Matematik becerileri sınıf ve yaş seviyesinin üstündedir.", "Kazanımlardaki başarısı yüksek düzeydedir ve beklenen seviyenin üzerindedir.", "Sayı ve işlem becerisi ile uzamsal şekil becerisi sınıf ve yaş seviyesinin üstündedir.", "Matematik dersindeki performansı iyi düzeyde olup sınıf ortalamasının üzerindedir.", "Temel matematiksel becerilerde başarılıdır ve beklenen düzeyin üzerindedir."], "B": ["Problemi çözmek için anlama ve çözüme yönelik kararlar verme becerisi gelişmiştir.", "Veri ve grafik yorumlama becerileri iyi düzeydedir.", "Matematiksel muhakeme becerisinin daha da gelişmesi için farklı soru tipleriyle karşılaştırılması faydalı olacaktır.", "İşlem becerisi güçlüdür; küçük dikkat hataları azaltıldığında başarısı daha da artacaktır.", "Kazanım bilgisi ölçen sorularda başarılıdır; yeni nesil sorularda da gelişim göstermektedir.", "Uzamsal şekil ve geometrik düşünme becerilerinde başarılıdır."], "C": ["Matematiksel muhakemesinin desteklenmesi için gerçek hayat durumları içeren senaryolarla karşılaştırılması ve akıl oyunları oynaması teşvik edilebilir.", "Soru okuma taktikleri ve problem çözme stratejileri üzerine çalışması desteklenmelidir.", "Yeni nesil sorularla ve süre tutarak yapılacak çalışmalarla desteklenmelidir.", "Kitap okuması ve soru okuma becerisini geliştirmeye yönelik çalışmalar teşvik edilebilir.", "Farklılaştırılmış ödevlerle ve zor soru tipleriyle desteklenmesi önerilir.", "Düzenli tekrar ve soru çözümüyle başarısını sürdürmesi önerilir."]}, {"A": ["Matematiğin tüm beceri alanlarında sınıf ve yaş seviyesinin üstündedir.", "Matematik becerisi sınıf ve yaş seviyesinin belirgin biçimde üstündedir.", "Sayı ve işlem becerisi, problem çözme ve matematiksel muhakeme alanlarında sınıf ve yaş seviyesinin üstündedir.", "Kazanımlara hakimiyeti çok yüksek düzeydedir ve beklenen düzeyin oldukça üzerinde performans göstermektedir.", "Matematiksel becerilerin tamamında yüksek başarı göstermektedir.", "Matematik dersindeki akademik performansı sınıf ortalamasının çok üzerindedir."], "B": ["Sayı ve işlem becerisi, matematiksel okuryazarlık ve problem çözme becerileri çok güçlüdür.", "Matematiksel muhakeme ve akıl yürütme becerileri yaş seviyesinin üzerinde gelişmiştir.", "Uzamsal şekil, veri ve grafik yorumlama becerilerinde de başarılıdır.", "Karşılaştığı farklı soru tiplerine hızlı ve doğru çözüm üretebilmektedir.", "Yeni nesil ve çok adımlı problemleri başarıyla çözebilmektedir.", "Kazanım bilgisi ölçen sorularda olduğu kadar muhakeme gerektiren sorularda da başarılıdır."], "C": ["Matematik projelerinde görev alabilir, üst düzey soruları içeren farklılaştırılmış ödevlerle desteklenebilir.", "Zenginleştirilmiş etkinlikler ve üst düzey problemlerle desteklenmelidir.", "Matematik olimpiyatı tarzı sorularla ve proje çalışmalarıyla desteklenmesi önerilir.", "Farklılaştırılmış görevlerle ve akran öğretimi etkinlikleriyle desteklenebilir.", "Gelişimini sürdürmesi için üst düzey soru ve araştırma görevleri verilebilir.", "Zihinsel becerilerini geliştirecek akıl oyunları ve problem kurma etkinlikleriyle desteklenebilir."]}];
+const AGROUPS = [
+ {k:"odev",label:"Ödev",opts:[
+  {v:"d",t:"Düzenli yapar",s:1,ph:["ödevlerini düzenli yapar","ödevlerini eksiksiz ve zamanında tamamlar"]},
+  {v:"b",t:"Bazen yapar",s:0,ph:["ödevlerini zaman zaman aksatır","ödevlerini düzensiz yapar"]},
+  {v:"y",t:"Yapmaz",s:-1,ph:["ödevlerini yapmaz","ödevlerini genellikle yapmaz"]}]},
+ {k:"huzur",label:"Dersin huzuru",opts:[
+  {v:"d",t:"Bozmaz",s:1,ph:["dersin huzurunu bozmaz","ders düzenine uyum sağlar"]},
+  {v:"b",t:"Zaman zaman bozar",s:0,ph:["dersin huzurunu zaman zaman bozar","zaman zaman ders akışını bozar"]},
+  {v:"y",t:"Bozar",s:-1,ph:["dersin huzurunu bozar","sıklıkla ders akışını bozar"]}]},
+ {k:"katilim",label:"Derse katılım",opts:[
+  {v:"d",t:"Aktif",s:1,ph:["derse aktif katılır","derse isteyerek katılım gösterir"]},
+  {v:"b",t:"Sınırlı",s:0,ph:["derse katılımı sınırlıdır","derse katılımı düşük düzeydedir"]},
+  {v:"y",t:"Katılmaz",s:-1,ph:["derse katılım göstermez","derse ilgisizdir"]}]},
+ {k:"dikkat",label:"Dikkat",opts:[
+  {v:"d",t:"Dikkatli takip eder",s:1,ph:["dersi dikkatle takip eder","derste dikkatlidir"]},
+  {v:"b",t:"Dikkati dağılır",s:0,ph:["dikkati zaman zaman dağılır","zaman zaman derse odaklanmakta zorlanır"]},
+  {v:"y",t:"Odaklanamaz",s:-1,ph:["dikkatini derse veremez","derse odaklanmakta güçlük çeker"]}]},
+ {k:"arac",label:"Araç gereç",opts:[
+  {v:"d",t:"Hazırlıklı gelir",s:1,ph:["ders araç gerecini eksiksiz getirir","derse hazırlıklı gelir"]},
+  {v:"b",t:"Bazen eksik",s:0,ph:["ders araç gerecini zaman zaman eksik getirir","derse zaman zaman hazırlıksız gelir"]},
+  {v:"y",t:"Getirmez",s:-1,ph:["ders araç gerecini getirmez","derse hazırlıksız gelir"]}]},
+ {k:"defter",label:"Defter ve not",opts:[
+  {v:"d",t:"Düzenli",s:1,ph:["defterini düzenli tutar","ders notlarını eksiksiz tutar"]},
+  {v:"b",t:"Eksikleri var",s:0,ph:["defterinde zaman zaman eksikler bulunur","ders notlarını zaman zaman eksik bırakır"]},
+  {v:"y",t:"Düzensiz",s:-1,ph:["defterini düzenli tutmaz","ders notlarını tutmaz"]}]},
+ {k:"calisma",label:"Çalışma alışkanlığı",opts:[
+  {v:"d",t:"Düzenli çalışır",s:1,ph:["düzenli çalışır","çalışma alışkanlığı gelişmiştir"]},
+  {v:"b",t:"Oturmamış",s:0,ph:["çalışma düzeni henüz oturmamıştır","çalışmalarında istikrar sağlayamamıştır"]},
+  {v:"y",t:"Yeterince çalışmaz",s:-1,ph:["yeterince çalışmaz","evde çalışma alışkanlığı yoktur"]}]},
+ {k:"iletisim",label:"Sınıf içi iletişim",opts:[
+  {v:"d",t:"Olumlu",s:1,ph:["arkadaşları ve öğretmenleriyle olumlu iletişim kurar","sınıf içi iletişimi olumludur"]},
+  {v:"b",t:"Zaman zaman sorun",s:0,ph:["arkadaşlarıyla ilişkilerinde zaman zaman sorun yaşar","sınıf içinde zaman zaman uyum sorunu yaşar"]},
+  {v:"y",t:"Uyum sorunu",s:-1,ph:["arkadaşlarıyla ve sınıf düzenine uyum konusunda sorun yaşar","sınıf içi iletişiminde sorunlar yaşar"]}]}
+];
+const AFLAGS = [
+ {k:"destek",label:"Destek eğitim / etüt",t:"destek eğitim ve etüt çalışmalarına yönlendirilmesi"},
+ {k:"veli",label:"Veli görüşmesi",t:"veli ile görüşülmesi"},
+ {k:"rehber",label:"Rehberlik görüşmesi",t:"rehberlik servisiyle görüşülmesi"},
+ {k:"zengin",label:"Zenginleştirme",t:"zenginleştirilmiş etkinliklerle desteklenmesi"}
+];
+
+/* ---------- Dönem cümleleri ---------- */
+const TERM = {
+  "1":[
+    "İkinci döneme güçlü bir hazırlıkla girebilmen için bu süreci verimli değerlendirmeni bekliyorum.",
+    "Önümüzdeki dönemde tempomuzu artıracağımız için çalışmalarını şimdiden planlı hale getirmelisin.",
+    "İkinci dönemde de aynı istikrarı sürdürmen yıl sonu başarını doğrudan etkileyecektir.",
+    "Yılın geri kalanında yapacağımız çalışmalara hazır olmak için eksik kazanımlarını bu dönem içinde tamamlamalısın.",
+    "Önümüzdeki dönemde gireceğimiz sınavlara hazırlıklı olman için çalışma düzenini şimdiden oturtmanı öneriyorum.",
+    "İkinci dönemde konuların zorluk seviyesi artacağı için bu dönemin kazanımlarını sağlam bir şekilde pekiştirmen önemli."],
+  "2":[
+    "Yıl sonuna doğru çalışmalarını planlı biçimde sürdürmen genel başarını doğrudan yükseltecektir.",
+    "Yaz tatili öncesindeki son sınavlara hazırlanırken konu tekrarlarını aksatmaman çok önemli.",
+    "Bir sonraki sınıfa güçlü bir temelle geçebilmen için bu süreci verimli değerlendirmeni bekliyorum.",
+    "Yıl sonu değerlendirmelerinde bu çalışmaların karşılığını alacağına inanıyorum.",
+    "Yılın geri kalan günlerini verimli kullanarak eksik kazanımlarını tamamlamanı bekliyorum.",
+    "Yıl sonu başarını yükseltmek için önümüzdeki haftalarda tekrarlarını sıklaştırmanı öneriyorum."]
+};
+
+/* ---------- Yardımcılar ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const trLow = s => s.toLocaleLowerCase("tr");
+const trUp = s => s.toLocaleUpperCase("tr");
+const titleCase = s => s.split(/\s+/).filter(Boolean).map(w => trUp(w.charAt(0)) + trLow(w.slice(1))).join(" ");
+const norm = s => trLow(String(s).replace(/\s+/g," ").trim());
+function hash(str){ let h = 2166136261>>>0; for(let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h,16777619)>>>0; } return h>>>0; }
+function rng(seed){ let a = seed>>>0; return function(){ a = (a + 0x6D2B79F5)>>>0; let t = a; t = Math.imul(t ^ t>>>15, t | 1); t ^= t + Math.imul(t ^ t>>>7, t | 61); return ((t ^ t>>>14)>>>0)/4294967296; }; }
+const fmt = n => n==null ? "" : String(Math.round(n*100)/100).replace(".",",");
+const parseNum = s => { const t = String(s).replace("%","").replace(",",".").trim(); if(t==="") return null; const n = parseFloat(t); return isFinite(n) ? n : null; };
+const lerp = (a,b,t) => a + (b-a)*t;
+
+/* ---------- Durum ---------- */
+function freshData(){
+  const d = {};
+  CLASSES.forEach(c => {
+    d[c] = (ROSTER[c]||[]).map((r,i) => ({ id: c+":"+i, idx:i, no:r.no, ad:r.ad, ort:r.ort, hitap:"", tag:"", rr:0 }));
+  });
+  return d;
+}
+function defaults(){
+  return { cls:"6A", th:[50,65,80,90], len:"orta", term:"1", hitapMode:"tumu", imzaOn:true, imza:"Batıkan ÖZTUNALI",
+    sort:"ad", dir:1, copyMode:"yorum", seed:1, data:freshData(), edits:{}, aedits:{}, view:"gel", alisLen:"kisa", nextIdx:1000 };
+}
+let S = defaults();
+try{
+  const raw = localStorage.getItem(KEY);
+  if(raw){ const p = JSON.parse(raw); if(p && p.data){ S = Object.assign(defaults(), p); CLASSES.forEach(c => { if(!S.data[c]) S.data[c] = freshData()[c]; }); } }
+}catch(e){}
+const EM = () => S.view === "alis" ? S.aedits : S.edits;
+function clearEdits(id){ delete S.edits[id]; delete S.aedits[id]; }
+let saveT = null;
+function save(){ clearTimeout(saveT); saveT = setTimeout(()=>{ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }, 250); }
+let lvFilter = null, query = "";
+
+/* ---------- Seviye ve yorum üretimi ---------- */
+function ths(){ const t = S.th.map(Number); return t.slice().sort((a,b)=>a-b); }
+function levelOf(ort){
+  if(ort==null || isNaN(ort)) return -1;
+  const t = ths(); let l = 0;
+  for(let i=0;i<4;i++) if(ort >= t[i]) l = i+1;
+  return l;
+}
+const permCache = {};
+function perm(level, slot, n){
+  const k = level+"|"+slot+"|"+S.seed;
+  if(permCache[k]) return permCache[k];
+  const r = rng(hash(k)); const a = Array.from({length:n},(_,i)=>i);
+  for(let i=n-1;i>0;i--){ const j = Math.floor(r()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; }
+  return permCache[k] = a;
+}
+const SLOT_OFF = {open:0, study:3, resource:1, extra:2, close:5};
+const SLOT_K = {open:0, study:1, resource:2, extra:3, close:2};
+function pick(st, level, slot){
+  const arr = POOL[level][slot], n = arr.length;
+  const k = SLOT_K[slot];
+  let i = perm(level, slot, n)[(st.idx + k*Math.floor(st.idx/n) + SLOT_OFF[slot]) % n];
+  if(st.rr > 0){ const r = rng(hash(st.id+"|"+slot+"|"+st.rr+"|"+S.seed)); i = (i + 1 + Math.floor(r()*(n-1))) % n; }
+  return arr[i];
+}
+function hitapOf(st){
+  if(st.hitap && st.hitap.trim()) return st.hitap.trim();
+  const w = st.ad.trim().split(/\s+/);
+  if(w.length === 1 || S.hitapMode === "ilk") return titleCase(w[0]);
+  return titleCase(w.slice(0,-1).join(" "));
+}
+function generate(st){
+  const lv = levelOf(st.ort); if(lv < 0) return "";
+  const parts = [pick(st,lv,"open")];
+  [st.tag, st.tag2].forEach((tg, j) => { if(tg && TAGS[tg] && !(j === 1 && tg === st.tag)){ const s = TAGS[tg].s; parts.push(s[(st.idx*2 + Math.floor(st.idx/3) + st.rr + S.seed + j*3) % s.length]); } });
+  parts.push(pick(st,lv,"study"));
+  if(S.len !== "kisa") parts.push(pick(st,lv,"resource"));
+  if(S.len === "uzun") parts.push(pick(st,lv,"extra"));
+  if(S.len !== "kisa" && S.term !== "0"){ const s = TERM[S.term]; parts.push(s[(st.idx*3 + Math.floor(st.idx/4) + st.rr + S.seed) % s.length]); }
+  parts.push(pick(st,lv,"close"));
+  let t = "Sevgili " + hitapOf(st) + ",\n" + parts.join(" ");
+  if(S.imzaOn && S.imza.trim()) t += "\n" + S.imza.trim();
+  return t;
+}
+
+/* ---------- ALİS üretimi ---------- */
+const cap = s => trUp(s.charAt(0)) + s.slice(1);
+const listTr = a => a.length < 2 ? a.join("") : a.slice(0,-1).join(", ") + " ve " + a[a.length-1];
+function chunk(a, n){ const o = []; for(let i=0;i<a.length;i+=n) o.push(a.slice(i,i+n)); return o; }
+function apick(st, lv, slot){
+  const arr = APOOL[lv][slot], n = arr.length, k = {A:0,B:1,C:2}[slot];
+  let i = perm(lv, "al"+slot, n)[(st.idx + k*Math.floor(st.idx/n) + k*2) % n];
+  if((st.arr||0) > 0){ const r = rng(hash(st.id+"|al"+slot+"|"+st.arr+"|"+S.seed)); i = (i + 1 + Math.floor(r()*(n-1))) % n; }
+  return arr[i];
+}
+function generateAlis(st){
+  const lv = levelOf(st.ort), al = st.al || {};
+  const pos = [], neg = [];
+  AGROUPS.forEach((g, gi) => {
+    const o = g.opts.find(x => x.v === al[g.k]); if(!o) return;
+    const ph = o.ph[(st.idx + (st.arr||0) + S.seed + gi) % o.ph.length];
+    (o.s > 0 ? pos : neg).push(ph);
+  });
+  const flags = AFLAGS.filter(f => al["f_"+f.k]).map(f => f.t);
+  const parts = [];
+  if(lv >= 0){ parts.push(apick(st, lv, "A")); if(S.alisLen === "uzun") parts.push(apick(st, lv, "B")); }
+  chunk(pos, 4).forEach(c => parts.push(cap(listTr(c)) + "."));
+  chunk(neg, 4).forEach((c, ci) => {
+    const body = listTr(c);
+    parts.push((ci === 0 ? (pos.length ? "Ancak " + body : cap(body)) : "Ayrıca " + body) + ".");
+  });
+  if(lv >= 0) parts.push(apick(st, lv, "C"));
+  if(flags.length) parts.push(cap(listTr(flags)) + " önerilir.");
+  return parts.join(" ");
+}
+
+const textOf = st => (st.id in EM()) ? EM()[st.id] : (S.view === "alis" ? generateAlis(st) : generate(st));
+
+/* ---------- Liste ---------- */
+const cur = () => S.data[S.cls];
+function sorted(list){
+  const d = S.dir;
+  const byName = (a,b) => a.ad.localeCompare(b.ad,"tr") * d;
+  const out = list.slice();
+  if(S.sort === "ad") out.sort(byName);
+  else if(S.sort === "no") out.sort((a,b)=>((a.no||0)-(b.no||0))*d);
+  else if(S.sort === "ort") out.sort((a,b)=>(((a.ort==null?-1:a.ort)-(b.ort==null?-1:b.ort))*d) || byName(a,b));
+  else out.sort((a,b)=>((levelOf(a.ort)-levelOf(b.ort))*d) || ((a.ort||0)-(b.ort||0))*d);
+  return out;
+}
+function visible(){
+  let l = cur();
+  if(lvFilter !== null) l = l.filter(s => levelOf(s.ort) === lvFilter);
+  const q = norm(query);
+  if(q) l = l.filter(s => norm(s.ad).includes(q) || String(s.no||"").includes(q));
+  return sorted(l);
+}
+function tagOptsHTML(sel, none){
+  const groups = {}; Object.keys(TAGS).forEach(k => { (groups[TAGS[k].g] = groups[TAGS[k].g] || []).push(k); });
+  return '<option value="">'+none+'</option>' + Object.keys(groups).map(g => '<optgroup label="'+esc(g)+'">' + groups[g].map(k => '<option value="'+k+'"'+(sel===k?" selected":"")+'>'+esc(TAGS[k].label)+'</option>').join("") + '</optgroup>').join("");
+}
+function rowHTMLAlis(st){
+  const lv = levelOf(st.ort), al = st.al || {};
+  const grp = AGROUPS.map(g => '<div class="cg"><span class="cgl">'+g.label+'</span><div class="chs">' + g.opts.map(o => '<button type="button" class="ch '+(o.s>0?"sp":o.s<0?"sn":"sm")+'" data-g="'+g.k+'" data-v="'+o.v+'" aria-pressed="'+(al[g.k]===o.v)+'">'+esc(o.t)+'</button>').join("") + '</div></div>').join("");
+  const flg = '<div class="cg"><span class="cgl">Öneri</span><div class="chs">' + AFLAGS.map(f => '<button type="button" class="ch sf" data-g="f_'+f.k+'" data-v="1" aria-pressed="'+(!!al["f_"+f.k])+'">'+esc(f.label)+'</button>').join("") + '</div></div>';
+  return '<article class="row arow" data-id="'+esc(st.id)+'">'+
+    '<div class="who"><div class="who-top"><span class="no">'+(st.no!=null?"#"+st.no:"")+'</span><h3 class="name">'+esc(st.ad)+'</h3></div>'+
+    '<div class="ctl"><label class="fld">Ortalama<input type="text" class="ort" inputmode="decimal" value="'+esc(fmt(st.ort))+'" autocomplete="off"></label>'+
+    '<div class="fld">Seviye<span class="pill'+(lv<0?" none":"")+'" '+(lv>=0?'style="--c:var(--l'+lv+')"':"")+'>'+(lv<0?"Ortalama yok":LV[lv])+'</span></div></div></div>'+
+    '<div class="cm"><div class="cgs">'+grp+flg+'</div>'+
+    '<textarea class="txt" rows="4" aria-label="'+esc(st.ad)+' için ALİS yorumu" placeholder="Ortalama girilip seçenekler işaretlendiğinde yorum burada oluşur">'+esc(textOf(st))+'</textarea>'+
+    '<div class="acts"><button type="button" class="btn primary small copy">Kopyala</button><button type="button" class="btn small reroll">Başka yorum</button>'+
+    '<span class="edited"'+((st.id in EM())?"":" hidden")+'>Elle düzenlendi</span><span class="count"></span></div></div></article>';
+}
+const rowHTML = st => S.view === "alis" ? rowHTMLAlis(st) : rowHTMLGel(st);
+function rowHTMLGel(st){
+  const lv = levelOf(st.ort);
+  return '<article class="row" data-id="'+esc(st.id)+'">'+
+    '<div class="who"><div class="who-top"><span class="no">'+(st.no!=null?"#"+st.no:"")+'</span><h3 class="name">'+esc(st.ad)+'</h3></div>'+
+    '<div class="ctl">'+
+      '<label class="fld">Ortalama<input type="text" class="ort" inputmode="decimal" value="'+esc(fmt(st.ort))+'" autocomplete="off"></label>'+
+      '<div class="fld">Seviye<span class="pill'+(lv<0?" none":"")+'" '+(lv>=0?'style="--c:var(--l'+lv+')"':"")+'>'+(lv<0?"Ortalama yok":LV[lv])+'</span></div>'+
+      '<label class="fld wide">Hitap<input type="text" class="hitap" value="'+esc(hitapOf(st))+'" autocomplete="off"></label>'+
+      '<label class="fld wide">Ek vurgu<select class="tag">'+tagOptsHTML(st.tag,"Ek vurgu yok")+'</select></label>'+
+      '<label class="fld wide">2. ek vurgu<select class="tag2">'+tagOptsHTML(st.tag2,"İkinci vurgu yok")+'</select></label>'+
+    '</div></div>'+
+    '<div class="cm"><textarea class="txt" rows="5" aria-label="'+esc(st.ad)+' için yorum" placeholder="Ortalama girildiğinde yorum burada oluşur">'+esc(textOf(st))+'</textarea>'+
+    '<div class="acts"><button type="button" class="btn primary small copy">Kopyala</button><button type="button" class="btn small reroll">Başka yorum</button>'+
+    '<span class="edited"'+((st.id in EM())?"":" hidden")+'>Elle düzenlendi</span><span class="count"></span></div></div></article>';
+}
+function autosize(ta){ ta.style.height = "auto"; ta.style.height = (ta.scrollHeight + 2) + "px"; }
+function autosizeAll(){ document.querySelectorAll(".txt").forEach(autosize); }
+function updCount(row){ const ta = row.querySelector(".txt"); row.querySelector(".count").textContent = ta.value ? ta.value.length + " karakter" : ""; }
+
+function renderTabs(){
+  $("#tabs").innerHTML = CLASSES.map(c => '<button type="button" class="tab" role="tab" data-c="'+c+'" aria-selected="'+(c===S.cls)+'">'+c+' <small>'+S.data[c].length+'</small></button>').join("");
+}
+function renderBand(){
+  const t = ths(); const cuts = [0].concat(t, [100]);
+  $("#band").innerHTML = LV.map((_,i) => '<span style="width:'+Math.max(0,cuts[i+1]-cuts[i])+'%;background:var(--l'+i+')"></span>').join("");
+  $("#bandScale").innerHTML = [0].concat(t,[100]).map(v => '<span style="left:'+v+'%">'+v+'</span>').join("");
+}
+function renderThGrid(){
+  const t = S.th;
+  let h = '<div class="th"><b><i class="dot" style="background:var(--l0)"></i>Ortalamanın altı</b><div class="fixed">'+ths()[0]+' puanın altı</div></div>';
+  const names = [1,2,3,4];
+  h += names.map((lv,i) => '<label class="th"><b><i class="dot" style="background:var(--l'+lv+')"></i>'+LV[lv]+'</b><span>alt sınır (puan ≥)</span><input type="number" min="0" max="100" step="1" data-i="'+i+'" value="'+t[i]+'" class="thIn"></label>').join("");
+  $("#thGrid").innerHTML = h;
+}
+function renderSum(){
+  const l = cur(); const nums = l.filter(s => s.ort!=null).map(s => s.ort);
+  const avg = nums.length ? nums.reduce((a,b)=>a+b,0)/nums.length : null;
+  const cnt = [0,0,0,0,0]; l.forEach(s => { const v = levelOf(s.ort); if(v>=0) cnt[v]++; });
+  $("#sum").innerHTML = '<span class="avg">Sınıf ortalaması <b>'+(avg==null?"-":fmt(avg))+'</b> · '+nums.length+' öğrenci</span>'+
+    '<button type="button" class="chip all" data-lv="" aria-pressed="'+(lvFilter===null)+'">Tümü '+l.length+'</button>'+
+    LV.map((n,i)=>'<button type="button" class="chip" style="--c:var(--l'+i+')" data-lv="'+i+'" aria-pressed="'+(lvFilter===i)+'">'+n+' '+cnt[i]+'</button>').join("");
+}
+function renderList(){
+  const v = visible();
+  $("#list").innerHTML = v.length ? v.map(rowHTML).join("") : '<div class="empty">Bu görünümde öğrenci yok.</div>';
+  autosizeAll();
+  document.querySelectorAll(".row").forEach(updCount);
+  $("#dir").textContent = S.dir === 1 ? "A → Z / küçükten büyüğe" : "Z → A / büyükten küçüğe";
+  renderSum();
+}
+function renderControls(){
+  const al = S.view === "alis";
+  $("#views").querySelectorAll(".vtab").forEach(b => b.setAttribute("aria-selected", String(b.dataset.v === S.view)));
+  $("#optsGel").hidden = al; $("#optsAlis").hidden = !al; $("#bulkBox").hidden = !al;
+  $("#h1").textContent = al ? "ALİS bilgi aktarımı" : "Gelişim raporu yorumları";
+  $("#alisLenSeg").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === S.alisLen)));
+  $("#lenSeg").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === S.len));
+  $("#term").value = S.term; $("#hitapMode").value = S.hitapMode; $("#imza").value = S.imza; $("#imzaOn").checked = S.imzaOn;
+  $("#sort").value = S.sort; $("#copyMode").value = S.copyMode;
+}
+function renderBulk(){
+  $("#bulkGrid").innerHTML = AGROUPS.map(g => '<label class="fld">'+g.label+'<select class="bk" data-g="'+g.k+'"><option value="">değiştirme</option>'+g.opts.map(o => '<option value="'+o.v+'">'+esc(o.t)+'</option>').join("")+'</select></label>').join("");
+  $("#bulkFlags").innerHTML = AFLAGS.map(f => '<label class="chk"><input type="checkbox" class="bkf" data-k="'+f.k+'"> '+esc(f.label)+'</label>').join("");
+}
+function renderAll(){ renderTabs(); renderBand(); renderThGrid(); renderControls(); renderList(); }
+
+/* ---------- Kopyalama ---------- */
+let toastT;
+function toast(m){ const t = $("#toast"); t.textContent = m; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove("on"), 1800); }
+function copyText(text, okMsg){
+  const fallback = () => {
+    const ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select();
+    let ok = false; try{ ok = document.execCommand("copy"); }catch(e){} document.body.removeChild(ta);
+    toast(ok ? okMsg : "Kopyalanamadı; metni seçip Ctrl+C ile kopyalayın");
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(()=>toast(okMsg), fallback); } else fallback();
+}
+const q = t => '"' + String(t).replace(/"/g,'""') + '"';
+function copyAll(){
+  const v = visible().filter(s => textOf(s));
+  if(!v.length){ toast("Kopyalanacak yorum yok"); return; }
+  const m = S.copyMode;
+  const rows = v.map(s => {
+    const c = q(textOf(s));
+    if(m === "yorum") return c;
+    if(m === "noadyorum") return [s.no==null?"":s.no, s.ad, c].join("\t");
+    return [s.no==null?"":s.no, s.ad, fmt(s.ort), c].join("\t");
+  });
+  copyText(rows.join("\n"), v.length + " yorum kopyalandı (Excel'e yapıştırabilirsiniz)");
+}
+
+/* ---------- Yapıştırma ---------- */
+function parsePaste(text){
+  const out = []; let bad = 0;
+  text.split(/\r?\n/).forEach(line => {
+    if(!line.trim()) return;
+    let toks = line.indexOf("\t") >= 0 ? line.split("\t") : (line.indexOf(";") >= 0 ? line.split(";") : line.split(/\s{2,}/));
+    toks = toks.map(t => t.trim()).filter(Boolean);
+    if(toks.length < 2){
+      const m = line.trim().match(/^(\d+)?\s*(.+?)\s+(-?\d+(?:[.,]\d+)?)\s*%?$/);
+      if(m) toks = [m[1], m[2], m[3]].filter(Boolean); else { bad++; return; }
+    }
+    const isNum = t => /^-?\d+(?:[.,]\d+)?%?$/.test(t);
+    const isSube = t => /^[5-8]\s*\/?\s*[A-Ea-e]$/.test(t);
+    const nums = toks.filter(isNum), names = toks.filter(t => !isNum(t) && !isSube(t));
+    const name = names.join(" ").trim();
+    if(!name){ bad++; return; }
+    let no = null, ort = null;
+    if(nums.length >= 2){ no = parseInt(nums[0],10); ort = parseNum(nums[nums.length-1]); }
+    else if(nums.length === 1){ ort = parseNum(nums[0]); }
+    if(ort == null && nums.length === 0){ /* ortalamasız satır: başlık olabilir */ bad++; return; }
+    out.push({no, ad: name, ort: ort==null ? null : Math.max(0, ort)});
+  });
+  return {rows: out, bad};
+}
+function doPaste(replace){
+  const {rows, bad} = parsePaste($("#pasteTa").value);
+  const msg = $("#pasteMsg");
+  if(!rows.length){ msg.textContent = "Okunabilir satır bulunamadı. Her satırda ad ve ortalama olmalı."; return; }
+  const list = cur(); let upd = 0, add = 0;
+  if(replace){
+    S.data[S.cls] = rows.map((r,i) => ({ id: S.cls+":"+(S.nextIdx++), idx:i, no:r.no, ad:r.ad, ort:r.ort, hitap:"", tag:"", rr:0 }));
+    list.forEach(s => clearEdits(s.id));
+    add = rows.length;
+  } else {
+    rows.forEach(r => {
+      let st = list.find(s => norm(s.ad) === norm(r.ad));
+      if(st){ st.ort = r.ort; if(r.no != null) st.no = r.no; clearEdits(st.id); upd++; }
+      else { list.push({ id: S.cls+":"+(S.nextIdx++), idx:S.nextIdx, no:r.no, ad:r.ad, ort:r.ort, hitap:"", tag:"", rr:0 }); add++; }
+    });
+  }
+  msg.textContent = upd + " öğrenci güncellendi, " + add + " eklendi" + (bad ? ", " + bad + " satır okunamadı" : "") + ".";
+  $("#pasteTa").value = ""; save(); renderAll();
+}
+
+/* ---------- Olaylar ---------- */
+function stOf(el){ const row = el.closest(".row"); if(!row) return null; const id = row.dataset.id; return {row, st: cur().find(s => s.id === id)}; }
+function refreshRow(row, st, keepText){
+  const lv = levelOf(st.ort);
+  const pill = row.querySelector(".pill");
+  pill.textContent = lv<0 ? "Ortalama yok" : LV[lv]; pill.classList.toggle("none", lv<0);
+  if(lv>=0) pill.style.setProperty("--c","var(--l"+lv+")"); else pill.style.removeProperty("--c");
+  if(!keepText){ const ta = row.querySelector(".txt"); ta.value = textOf(st); autosize(ta); }
+  row.querySelector(".edited").hidden = !(st.id in EM());
+  updCount(row);
+}
+$("#tabs").addEventListener("click", e => { const b = e.target.closest(".tab"); if(!b) return; S.cls = b.dataset.c; lvFilter = null; save(); renderAll(); });
+$("#sum").addEventListener("click", e => { const b = e.target.closest(".chip"); if(!b) return; lvFilter = b.dataset.lv === "" ? null : Number(b.dataset.lv); renderList(); });
+$("#thGrid").addEventListener("change", e => {
+  const i = e.target.dataset.i; if(i === undefined) return;
+  let v = Number(e.target.value); if(!isFinite(v)) v = S.th[i]; S.th[i] = Math.min(100, Math.max(0, v));
+  save(); renderBand(); renderThGrid(); renderList();
+});
+$("#lenSeg").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return; S.len = b.dataset.v; save(); renderControls(); renderList(); });
+$("#term").addEventListener("change", e => { S.term = e.target.value; save(); renderList(); });
+$("#hitapMode").addEventListener("change", e => { S.hitapMode = e.target.value; save(); renderList(); });
+$("#imza").addEventListener("input", e => { S.imza = e.target.value; save(); renderList(); });
+$("#imzaOn").addEventListener("change", e => { S.imzaOn = e.target.checked; save(); renderList(); });
+$("#sort").addEventListener("change", e => { S.sort = e.target.value; save(); renderList(); });
+$("#dir").addEventListener("click", () => { S.dir *= -1; save(); renderList(); });
+$("#copyMode").addEventListener("change", e => { S.copyMode = e.target.value; save(); });
+$("#q").addEventListener("input", e => { query = e.target.value; renderList(); });
+$("#copyAll").addEventListener("click", copyAll);
+$("#shuffle").addEventListener("click", () => { S.seed++; S.edits = {}; S.aedits = {}; cur().forEach(s => { s.rr = 0; s.arr = 0; }); save(); renderList(); toast("Yorumlar yeniden dağıtıldı"); });
+$("#pasteUpd").addEventListener("click", () => doPaste(false));
+$("#pasteRep").addEventListener("click", () => doPaste(true));
+
+let resetArmed = false;
+$("#reset").addEventListener("click", e => {
+  const b = e.currentTarget;
+  if(!resetArmed){ resetArmed = true; b.textContent = "Emin misiniz? Tekrar tıklayın"; setTimeout(()=>{ resetArmed = false; b.textContent = "Başlangıç verisine dön"; }, 3500); return; }
+  resetArmed = false; b.textContent = "Başlangıç verisine dön";
+  const keep = {cls:S.cls, imza:S.imza, imzaOn:S.imzaOn}; S = Object.assign(defaults(), keep); save(); renderAll(); toast("Başlangıç verisine dönüldü");
+});
+
+const list = $("#list");
+list.addEventListener("input", e => {
+  const c = stOf(e.target); if(!c) return; const {row, st} = c;
+  if(e.target.classList.contains("ort")){ st.ort = parseNum(e.target.value); if(st.ort!=null) st.ort = Math.max(0, st.ort); clearEdits(st.id); refreshRow(row, st, false); renderSum(); save(); }
+  else if(e.target.classList.contains("hitap")){ st.hitap = e.target.value; delete S.edits[st.id]; refreshRow(row, st, false); save(); }
+  else if(e.target.classList.contains("txt")){ EM()[st.id] = e.target.value; autosize(e.target); row.querySelector(".edited").hidden = false; updCount(row); save(); }
+});
+list.addEventListener("change", e => {
+  const c = stOf(e.target); if(!c) return; const {row, st} = c;
+  if(e.target.classList.contains("ort")){ e.target.value = fmt(st.ort); if(S.sort==="ort"||S.sort==="seviye"||lvFilter!==null) renderList(); }
+  else if(e.target.classList.contains("tag")){ st.tag = e.target.value; delete S.edits[st.id]; refreshRow(row, st, false); save(); }
+  else if(e.target.classList.contains("tag2")){ st.tag2 = e.target.value; delete S.edits[st.id]; refreshRow(row, st, false); save(); }
+});
+list.addEventListener("click", e => {
+  const c = stOf(e.target); if(!c) return; const {row, st} = c;
+  const ch = e.target.closest(".ch"); if(ch){ alisToggle(row, st, ch); return; }
+  if(e.target.closest(".copy")){ const v = row.querySelector(".txt").value; if(!v){ toast("Önce ortalama girin"); return; } copyText(v, st.ad.split(" ")[0] + " için yorum kopyalandı"); }
+  else if(e.target.closest(".reroll")){ if(S.view === "alis") st.arr = (st.arr||0) + 1; else st.rr++; delete EM()[st.id]; refreshRow(row, st, false); save(); }
+});
+window.addEventListener("resize", autosizeAll);
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(autosizeAll);
+
+function alisToggle(row, st, ch){
+  st.al = st.al || {}; const g = ch.dataset.g, v = ch.dataset.v;
+  st.al[g] = (st.al[g] === v) ? "" : v;
+  row.querySelectorAll('.ch[data-g="'+g+'"]').forEach(b => b.setAttribute("aria-pressed", String(st.al[g] === b.dataset.v)));
+  delete S.aedits[st.id]; refreshRow(row, st, false); save();
+}
+$("#views").addEventListener("click", e => { const b = e.target.closest(".vtab"); if(!b) return; S.view = b.dataset.v; lvFilter = null; save(); renderAll(); });
+$("#alisLenSeg").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return; S.alisLen = b.dataset.v; save(); renderControls(); renderList(); });
+function bulk(mode){
+  const sel = {};
+  document.querySelectorAll(".bk").forEach(s => { if(s.value) sel[s.dataset.g] = s.value; });
+  document.querySelectorAll(".bkf:checked").forEach(c => { sel["f_"+c.dataset.k] = "1"; });
+  const keys = Object.keys(sel);
+  if(!keys.length){ toast("Önce uygulanacak seçenekleri belirleyin"); return; }
+  cur().forEach(st => { st.al = st.al || {}; keys.forEach(k => { if(mode === "over" || !st.al[k]) st.al[k] = sel[k]; }); delete S.aedits[st.id]; });
+  save(); renderList(); toast("Sınıftaki öğrencilere uygulandı");
+}
+$("#bulkFill").addEventListener("click", () => bulk("fill"));
+$("#bulkOver").addEventListener("click", () => bulk("over"));
+let clrArmed = false;
+$("#bulkClear").addEventListener("click", e => {
+  const b = e.currentTarget;
+  if(!clrArmed){ clrArmed = true; b.textContent = "Emin misiniz? Tekrar tıklayın"; setTimeout(() => { clrArmed = false; b.textContent = "Bu sınıfın işaretlerini temizle"; }, 3500); return; }
+  clrArmed = false; b.textContent = "Bu sınıfın işaretlerini temizle";
+  cur().forEach(st => { st.al = {}; delete S.aedits[st.id]; }); save(); renderList(); toast("İşaretler temizlendi");
+});
+renderBulk();
+renderAll();
+})();
+</script>
+
+</body></html>

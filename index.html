@@ -106,6 +106,12 @@ details.paste summary{cursor:pointer;padding:11px 16px;font-weight:600}
 .paste-body{padding:0 16px 16px;display:grid;gap:10px}
 .paste-body textarea{width:100%;min-height:120px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;resize:vertical}
 .hint{font-size:13px;color:var(--muted);margin:0}
+.lrn{display:grid;gap:8px;padding:12px 0;border-top:1px solid var(--edge)}
+.lrn:first-child{border-top:0;padding-top:0}
+.lrn-top{display:flex;gap:10px;align-items:baseline}
+.lrn-top .btn{margin-left:auto}
+.lrn-lv{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.lrn-txt{margin:0;font-size:14px;line-height:1.55}
 .msg{font-size:13px;font-weight:600;min-height:18px}
 
 .list{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:12px}
@@ -266,6 +272,11 @@ h1{background:linear-gradient(180deg,var(--h1a),var(--h1b));-webkit-background-c
         <button type="button" class="btn ghost" id="bulkClear">Bu sınıfın işaretlerini temizle</button>
       </div>
     </div>
+  </details>
+
+  <details class="paste" id="learnBox">
+    <summary id="learnSum">Öğrettiğim yorumlar</summary>
+    <div class="paste-body" id="learnList"></div>
   </details>
 
   <div class="bar">
@@ -646,13 +657,14 @@ function freshData(){
 }
 function defaults(){
   return { cls:"6A", th:[50,65,80,90], len:"orta", term:"1", hitapMode:"tumu", imzaOn:true, imza:"Batıkan ÖZTUNALI",
-    sort:"ad", dir:1, copyMode:"yorum", seed:1, data:freshData(), edits:{}, aedits:{}, view:"gel", alisLen:"kisa", nextIdx:1000 };
+    sort:"ad", dir:1, copyMode:"yorum", seed:1, data:freshData(), edits:{}, aedits:{}, view:"gel", alisLen:"kisa", nextIdx:1000, learned:[] };
 }
 let S = defaults();
 try{
   const raw = localStorage.getItem(KEY);
   if(raw){ const p = JSON.parse(raw); if(p && p.data){ S = Object.assign(defaults(), p); CLASSES.forEach(c => { if(!S.data[c]) S.data[c] = freshData()[c]; }); } }
 }catch(e){}
+if(!Array.isArray(S.learned)) S.learned = [];
 const EM = () => S.view === "alis" ? S.aedits : S.edits;
 function clearEdits(id){ delete S.edits[id]; delete S.aedits[id]; }
 let saveT = null, pend = false;
@@ -692,6 +704,63 @@ function pick(st, level, slot){
   if(st.rr > 0){ const r = rng(hash(st.id+"|"+slot+"|"+st.rr+"|"+S.seed)); i = (i + 1 + Math.floor(r()*(n-1))) % n; }
   return arr[i];
 }
+/* ---------- Öğretilen yorumlar: cümleler aynı seviyedeki diğer yorumlara harmanlanır ---------- */
+function learnedPool(lv, slot){
+  const o = [];
+  (S.learned || []).forEach(e => { if(e.lvs.indexOf(lv) >= 0) e.parts.forEach(p => { if(p.slot === slot) o.push(p.t); }); });
+  return o;
+}
+function pickL(st, lv, slot){
+  const L = learnedPool(lv, slot);
+  if(L.length){
+    const r = rng(hash(st.id + "|L" + slot + "|" + S.seed + "|" + st.rr));
+    const p = Math.min(0.5, 0.25 + 0.04 * L.length);
+    if(r() < p) return L[Math.floor(r() * L.length)].split("{ad}").join(hitapOf(st));
+  }
+  return pick(st, lv, slot);
+}
+function learnFrom(st, text){
+  const lv = levelOf(st.ort);
+  if(lv < 0){ toast("Önce ortalama girin"); return; }
+  let lines = String(text || "").split(/\n+/).map(x => x.trim()).filter(Boolean);
+  if(lines.length && /^Sevgili\s.+,$/.test(lines[0])) lines.shift();
+  const imz = (S.imza || "").trim();
+  if(lines.length && imz && lines[lines.length-1] === imz) lines.pop();
+  const sents = (lines.join(" ").match(/[^.!?]+(?:[.!?]+|$)/g) || []).map(s => s.trim()).filter(s => s.length >= 12);
+  if(!sents.length){ toast("Öğretilecek cümle bulunamadı"); return; }
+  const names = Array.from(new Set(st.ad.split(/\s+/).concat(hitapOf(st))));
+  const hit = hitapOf(st);
+  const ok = []; let skipped = 0;
+  sents.forEach(s => {
+    let t = s;
+    [hit].concat(names).forEach(nm => { if(nm.length >= 3) t = t.replace(new RegExp("(^|[^\\p{L}])" + nm.replace(/[.*+?^${}()|[\]\\]/g,"\\$&") + "(?![\\p{L}'’])", "giu"), "$1{ad}"); });
+    const plain = t.split("{ad}").join("");
+    if(names.some(nm => nm.length >= 3 && plain.toLowerCase().indexOf(nm.toLowerCase()) >= 0)){ skipped++; return; }
+    ok.push(t);
+  });
+  if(!ok.length){ toast("Cümlelerde öğrencinin adı geçtiği için öğretilemedi"); return; }
+  const n = ok.length;
+  const parts = ok.map((t, i) => ({ slot: n === 1 ? "open" : i === 0 ? "open" : i === n-1 ? "close" : (i === 1 ? "study" : "extra"), t }));
+  const key = ok.join(" ");
+  const dupe = (S.learned || []).findIndex(e => e.key === key && e.sid !== st.id);
+  if(dupe >= 0){ toast("Bu yorum zaten öğretilmiş"); return; }
+  const entry = { sid: st.id, src: st.ad, key, lvs: [lv], parts };
+  const ex = S.learned.findIndex(e => e.sid === st.id);
+  if(ex >= 0){ entry.lvs = S.learned[ex].lvs; S.learned[ex] = entry; } else S.learned.push(entry);
+  save(); renderLearn(); renderList();
+  toast((ex >= 0 ? "Yorum güncellendi: " : "Yorum öğrenildi: ") + n + " cümle diğer yorumlara harmanlanacak" + (skipped ? " (" + skipped + " cümle ad içerdiği için atlandı)" : ""));
+}
+function renderLearn(){
+  const box = $("#learnBox"); if(!box) return;
+  box.hidden = S.view === "alis";
+  const L = S.learned || [];
+  $("#learnSum").textContent = "Öğrettiğim yorumlar" + (L.length ? " (" + L.length + ")" : "");
+  $("#learnList").innerHTML = L.length ? L.map((e, i) => '<div class="lrn" data-i="'+i+'">'+
+    '<div class="lrn-top"><b>'+esc(e.src)+'</b><span class="hint">'+e.parts.length+' cümle</span><button type="button" class="btn small ghost lrn-del">Sil</button></div>'+
+    '<div class="lrn-lv"><span class="hint">Kullanılacağı seviyeler:</span>'+LV.map((nm, l) => '<button type="button" class="chip lrn-l" style="--c:var(--l'+l+')" data-l="'+l+'" aria-pressed="'+(e.lvs.indexOf(l) >= 0)+'">'+esc(nm)+'</button>').join("")+'</div>'+
+    '<p class="lrn-txt">'+e.parts.map(p => esc(p.t.split("{ad}").join("[ad]"))).join(" ")+'</p></div>').join("")
+    : '<p class="hint">Henüz öğrettiğiniz yorum yok. Bir öğrencinin yorumunu kendinize göre düzenleyip satırdaki "Yorumu öğret" düğmesine basın; cümleleri aynı seviyedeki diğer öğrencilerin yorumlarına karışır.</p>';
+}
 function hitapOf(st){
   if(st.hitap && st.hitap.trim()) return st.hitap.trim();
   const w = st.ad.trim().split(/\s+/);
@@ -700,13 +769,13 @@ function hitapOf(st){
 }
 function generate(st){
   const lv = levelOf(st.ort); if(lv < 0) return "";
-  const parts = [pick(st,lv,"open")];
+  const parts = [pickL(st,lv,"open")];
   [st.tag, st.tag2].forEach((tg, j) => { if(tg && TAGS[tg] && !(j === 1 && tg === st.tag)){ const s = TAGS[tg].s; parts.push(s[(st.idx*2 + Math.floor(st.idx/3) + st.rr + S.seed + j*3) % s.length]); } });
-  parts.push(pick(st,lv,"study"));
+  parts.push(pickL(st,lv,"study"));
   if(S.len !== "kisa") parts.push(pick(st,lv,"resource"));
-  if(S.len === "uzun") parts.push(pick(st,lv,"extra"));
+  if(S.len === "uzun") parts.push(pickL(st,lv,"extra"));
   if(S.len !== "kisa" && S.term !== "0"){ const s = TERM[S.term]; parts.push(s[(st.idx*3 + Math.floor(st.idx/4) + st.rr + S.seed) % s.length]); }
-  parts.push(pick(st,lv,"close"));
+  parts.push(pickL(st,lv,"close"));
   let t = "Sevgili " + hitapOf(st) + ",\n" + parts.join(" ");
   if(S.imzaOn && S.imza.trim()) t += "\n" + S.imza.trim();
   return t;
@@ -794,7 +863,7 @@ function rowHTMLGel(st){
       '<label class="fld wide">2. ek vurgu<select class="tag2">'+tagOptsHTML(st.tag2,"İkinci vurgu yok")+'</select></label>'+
     '</div></div>'+
     '<div class="cm"><textarea class="txt" rows="5" aria-label="'+esc(st.ad)+' için yorum" placeholder="Ortalama girildiğinde yorum burada oluşur">'+esc(textOf(st))+'</textarea>'+
-    '<div class="acts"><button type="button" class="btn primary small copy">Kopyala</button><button type="button" class="btn small reroll">Başka yorum</button>'+
+    '<div class="acts"><button type="button" class="btn primary small copy">Kopyala</button><button type="button" class="btn small reroll">Başka yorum</button><button type="button" class="btn small learn" title="Bu yorumdaki cümleleri havuza ekler; aynı seviyedeki diğer yorumlara karışır">Yorumu öğret</button>'+
     '<span class="edited"'+((st.id in EM())?"":" hidden")+'>Elle düzenlendi</span><span class="count"></span></div></div></article>';
 }
 function autosize(ta){ ta.style.height = "auto"; ta.style.height = (ta.scrollHeight + 2) + "px"; }
@@ -846,7 +915,7 @@ function renderBulk(){
   $("#bulkGrid").innerHTML = AGROUPS.map(g => '<label class="fld">'+g.label+'<select class="bk" data-g="'+g.k+'"><option value="">değiştirme</option>'+g.opts.map(o => '<option value="'+o.v+'">'+esc(o.t)+'</option>').join("")+'</select></label>').join("");
   $("#bulkFlags").innerHTML = AFLAGS.map(f => '<label class="chk"><input type="checkbox" class="bkf" data-k="'+f.k+'"> '+esc(f.label)+'</label>').join("");
 }
-function renderAll(){ renderTabs(); renderBand(); renderThGrid(); renderControls(); renderList(); }
+function renderAll(){ renderTabs(); renderBand(); renderThGrid(); renderControls(); renderList(); renderLearn(); }
 
 /* ---------- Kopyalama ---------- */
 let toastT;
@@ -954,7 +1023,7 @@ $("#reset").addEventListener("click", e => {
   const b = e.currentTarget;
   if(!resetArmed){ resetArmed = true; b.textContent = "Emin misiniz? Tekrar tıklayın"; setTimeout(()=>{ resetArmed = false; b.textContent = "Başlangıç verisine dön"; }, 3500); return; }
   resetArmed = false; b.textContent = "Başlangıç verisine dön";
-  const keep = {cls:S.cls, imza:S.imza, imzaOn:S.imzaOn}; S = Object.assign(defaults(), keep); save(); renderAll(); toast("Başlangıç verisine dönüldü");
+  const keep = {cls:S.cls, imza:S.imza, imzaOn:S.imzaOn, learned:S.learned}; S = Object.assign(defaults(), keep); save(); renderAll(); toast("Başlangıç verisine dönüldü");
 });
 
 const list = $("#list");
@@ -974,6 +1043,7 @@ list.addEventListener("click", e => {
   const c = stOf(e.target); if(!c) return; const {row, st} = c;
   const ch = e.target.closest(".ch"); if(ch){ alisToggle(row, st, ch); return; }
   if(e.target.closest(".copy")){ const v = row.querySelector(".txt").value; if(!v){ toast("Önce ortalama girin"); return; } copyText(v, st.ad.split(" ")[0] + " için yorum kopyalandı"); }
+  else if(e.target.closest(".learn")){ const v = row.querySelector(".txt").value; if(!v){ toast("Önce ortalama girin"); return; } learnFrom(st, v); }
   else if(e.target.closest(".reroll")){ if(S.view === "alis") st.arr = (st.arr||0) + 1; else st.rr++; delete EM()[st.id]; refreshRow(row, st, false); save(); }
 });
 window.addEventListener("resize", autosizeAll);
@@ -1071,6 +1141,17 @@ setSt("local");
   }catch(e){ setSt("local"); return; }
   cloudReady = true; cloudFlush();
 })();
+$("#learnList").addEventListener("click", ev => {
+  const it = ev.target.closest(".lrn"); if(!it) return;
+  const i = +it.dataset.i, e = S.learned[i]; if(!e) return;
+  if(ev.target.closest(".lrn-del")){ S.learned.splice(i, 1); save(); renderLearn(); renderList(); toast("Yorum havuzdan silindi"); return; }
+  const c = ev.target.closest(".lrn-l");
+  if(c){
+    const l = +c.dataset.l, k = e.lvs.indexOf(l);
+    if(k >= 0){ if(e.lvs.length > 1) e.lvs.splice(k, 1); else { toast("En az bir seviye seçili olmalı"); return; } } else e.lvs.push(l);
+    save(); renderLearn(); renderList();
+  }
+});
 renderBulk();
 renderAll();
 })();

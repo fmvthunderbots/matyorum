@@ -90,6 +90,7 @@
     --mat-metal:linear-gradient(180deg,#eaf2fb 0%,#bcd3ea 46%,#98b8da 54%,#c2d6ec 100%);
     --fen-metal:linear-gradient(180deg,#f3f8fc 0%,#cfdeec 46%,#aebfd1 54%,#d6e3ef 100%);
   color-scheme:dark;
+  color-scheme:dark;
 }
 *{box-sizing:border-box}
 body{background-color:var(--bg);background-image:var(--bg-img);background-attachment:fixed;color:var(--ink);min-height:100vh;font-family:var(--font-body);font-size:15px;line-height:1.5;margin:0}
@@ -247,8 +248,16 @@ details.paste summary{cursor:pointer;padding:11px 16px;font-weight:600}
   .app.fm{display:block}
   .app.fm .views,.app.fm .rounds,.app.fm>.panel{display:flex;margin-bottom:8px}
   .fcard .cgs{grid-template-columns:minmax(0,1fr)}
-  .fhead{flex-wrap:wrap}
+  .fhead{flex-wrap:wrap;gap:8px}
+  .fhead .fwho{flex:1 1 150px;flex-wrap:nowrap}
+  .fhead .fwho .name{flex:1;min-width:0}
+  .fhead .fnav[data-d="1"]{order:2}
+  .fhead .fwho{order:1}
 }
+.fl,.fcard .txt,.paste-body textarea,.app *{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--muted) 60%,transparent) transparent}
+.fl::-webkit-scrollbar{width:8px;height:8px}
+.fl::-webkit-scrollbar-track{background:transparent}
+.fl::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--muted) 55%,transparent);border-radius:8px}
 details.thbox>summary{font-family:var(--font-display);font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px}\ndetails.more{margin-top:2px}
 details.more>summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);padding:4px 0}
 details.more>.cgs,details.more>.skg{margin-top:8px}

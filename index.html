@@ -193,6 +193,62 @@ details.paste summary{cursor:pointer;padding:11px 16px;font-weight:600}
   .fl-item{width:auto;flex:none;white-space:nowrap}
   .fl-item .nm{max-width:150px}
 }
+
+.app:not(.fm) #toolsBtn{display:none}
+#toolsBtn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.fhead .fld.inl{flex-direction:row;align-items:center;gap:6px;width:auto}
+.fhead .fld.inl input{width:70px;padding:4px 8px}
+.fhead .pill{height:30px;padding:0 10px;font-size:13px}
+.fhead .fnav{padding:4px 10px;min-width:36px}
+.fcard.row .fwho .name{font-size:17px}
+.fcard.row{gap:8px;padding:10px 14px}
+.fcard .txt{padding:8px 11px;font-size:15px;line-height:1.5}
+.fcard .acts{gap:6px}
+.fcard details.more{margin-top:0}
+.fcard details.more>summary{padding:2px 0;font-size:12px}
+.fcard details.more>.cgs,.fcard details.more>.skg{margin-top:4px}
+.fcard .skg{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:3px 14px}
+.fcard .skg .ch{padding:0;line-height:1.3;width:28px}
+.fcard .cgs{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px}
+.fcard .cg{flex-direction:row;align-items:center;gap:8px}
+.fcard .cg:last-child{grid-column:1 / -1}
+.fcard .cgl{flex:none;width:96px;font-size:11px;line-height:1.2}
+.fcard .cg .chs{gap:4px}
+.fcard .ch{padding:1px 9px;font-size:12.5px;line-height:1.45}
+.app.fm{display:flex;flex-wrap:wrap;align-items:center;column-gap:14px;padding-block:10px 16px}
+.app.fm>*{flex:0 0 100%;min-width:0}
+.app.fm>.views,.app.fm>.rounds,.app.fm>.panel{flex:0 0 auto}
+.app.fm header.top{margin-bottom:6px;align-items:center}
+.app.fm .eyebrow,.app.fm .savest{display:none}
+.app.fm h1{font-size:22px;margin:0}
+.app.fm .views,.app.fm .rounds{margin:0 0 8px}
+.app.fm .vtab{padding:5px 14px}
+.app.fm .rounds .hint{display:none}
+.app.fm .rounds .seg button{padding:5px 12px}
+.app.fm>.panel{padding:4px 10px;margin:0 0 8px;gap:0;margin-left:auto}
+.app.fm #thBox,.app.fm #optsAlis .hint,.app.fm #sum,.app.fm .rnote,.app.fm details.paste,.app.fm .copygrp,.app.fm #shuffle,.app.fm .foot{display:none}
+.app.fm.tools .rnote,.app.fm.tools details.paste{display:block}
+.app.fm.tools .rnote{display:flex}
+.app.fm.tools .foot{display:block}
+.app.fm #optsAlis{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.app.fm #optsAlis .fld{flex-direction:row;align-items:center;gap:6px}
+.app.fm #optsAlis .seg button{padding:4px 10px}
+.app.fm .bar{margin-bottom:8px;gap:8px}
+.app.fm .bar input{padding:5px 10px}
+.app.fm .fl{max-height:calc(100vh - var(--fltop,250px) - 12px);top:6px}
+.app.fm .nav{flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:0 0 6px}
+.app.fm .nav .seg button{padding:4px 12px}
+.app.fm .nav .tab{padding:3px 10px}
+.app.fm .nav .tabs{gap:5px}
+.app.fm .seg button{white-space:nowrap}
+.app.fm .fcard.row,.app.fm .fl{margin-bottom:0}
+.app.fm .fl-item{padding:3px 8px;font-size:14px}
+@media (max-width:820px){
+  .app.fm{display:block}
+  .app.fm .views,.app.fm .rounds,.app.fm>.panel{display:flex;margin-bottom:8px}
+  .fcard .cgs{grid-template-columns:minmax(0,1fr)}
+  .fhead{flex-wrap:wrap}
+}
 details.thbox>summary{font-family:var(--font-display);font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px}\ndetails.more{margin-top:2px}
 details.more>summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);padding:4px 0}
 details.more>.cgs,details.more>.skg{margin-top:8px}
@@ -444,6 +500,7 @@ h1{background:linear-gradient(180deg,var(--h1a),var(--h1b));-webkit-background-c
       </select>
       <button type="button" class="btn primary" id="copyAll">Hepsini kopyala</button>
     </div>
+    <button type="button" class="btn" id="toolsBtn" aria-pressed="false" title="Dosyadan yükleme, toplu işaretleme, öğretilen yorumlar ve ortalama uyarıları">Araçlar</button>
     <button type="button" class="btn" id="shuffle" title="Otomatik yorumların cümle seçimlerini yeniden dağıtır; elle düzenlediklerin korunur">Yeniden karıştır</button>
   </div>
 
@@ -735,31 +792,31 @@ const AGROUPS = [
   {v:"y",t:"Yapmaz",s:-1,ph:["ödev sorumluluğunu yerine getirme konusunda desteğe ihtiyaç duyar","ödevlerini tamamlama alışkanlığını kazanma sürecindedir"]}]},
  {k:"huzur",label:"Dersin huzuru",opts:[
   {v:"d",t:"Bozmaz",s:1,ph:["dersin huzurunu bozmaz","ders düzenine uyum sağlar"]},
-  {v:"b",t:"Zaman zaman bozar",s:0,ph:["ders düzenine uyum sağlama konusunda zaman zaman hatırlatmaya ihtiyaç duyar","ders akışına uyum sürecindedir"]},
+  {v:"b",t:"Bazen bozar",s:0,ph:["ders düzenine uyum sağlama konusunda zaman zaman hatırlatmaya ihtiyaç duyar","ders akışına uyum sürecindedir"]},
   {v:"y",t:"Bozar",s:-1,ph:["ders düzenine uyum sağlama konusunda yönlendirmeye ihtiyaç duyar","ders kurallarına uyum konusunda desteğe ihtiyaç duyar"]}]},
  {k:"katilim",label:"Derse katılım",opts:[
   {v:"d",t:"Aktif",s:1,ph:["derse aktif katılır","derse isteyerek katılım gösterir"]},
   {v:"b",t:"Sınırlı",s:0,ph:["derse katılımını artırma sürecindedir","derse katılımının desteklenmesine ihtiyaç duyar"]},
   {v:"y",t:"Katılmaz",s:-1,ph:["derse katılım konusunda teşvike ihtiyaç duyar","derse katılımının artırılması için yönlendirmeye ihtiyaç duyar"]}]},
  {k:"dikkat",label:"Dikkat",opts:[
-  {v:"d",t:"Dikkatli takip eder",s:1,ph:["dersi dikkatle takip eder","derste dikkatlidir"]},
+  {v:"d",t:"Dikkatli",s:1,ph:["dersi dikkatle takip eder","derste dikkatlidir"]},
   {v:"b",t:"Dikkati dağılır",s:0,ph:["dikkatini derste sürdürme konusunda hatırlatmaya ihtiyaç duyar","derse odaklanma süresini geliştirme sürecindedir"]},
   {v:"y",t:"Odaklanamaz",s:-1,ph:["derse odaklanma konusunda desteğe ihtiyaç duyar","dikkatini derse yöneltme konusunda yönlendirmeye ihtiyaç duyar"]}]},
  {k:"arac",label:"Araç gereç",opts:[
-  {v:"d",t:"Hazırlıklı gelir",s:1,ph:["ders araç gerecini eksiksiz getirir","derse hazırlıklı gelir"]},
+  {v:"d",t:"Hazırlıklı",s:1,ph:["ders araç gerecini eksiksiz getirir","derse hazırlıklı gelir"]},
   {v:"b",t:"Bazen eksik",s:0,ph:["ders araç gerecini hazır bulundurma konusunda zaman zaman hatırlatmaya ihtiyaç duyar","derse hazırlık düzenini oturtma sürecindedir"]},
   {v:"y",t:"Getirmez",s:-1,ph:["ders araç gereci konusunda desteğe ihtiyaç duyar","derse hazırlık alışkanlığını kazanma sürecindedir"]}]},
  {k:"defter",label:"Defter ve not",opts:[
   {v:"d",t:"Düzenli",s:1,ph:["defterini düzenli tutar","ders notlarını eksiksiz tutar"]},
-  {v:"b",t:"Eksikleri var",s:0,ph:["defter ve not düzenini geliştirme sürecindedir","ders notlarını tutma konusunda zaman zaman hatırlatmaya ihtiyaç duyar"]},
+  {v:"b",t:"Eksik var",s:0,ph:["defter ve not düzenini geliştirme sürecindedir","ders notlarını tutma konusunda zaman zaman hatırlatmaya ihtiyaç duyar"]},
   {v:"y",t:"Düzensiz",s:-1,ph:["defter ve not tutma alışkanlığını kazanma konusunda desteğe ihtiyaç duyar","ders notlarını düzenli tutma konusunda yönlendirmeye ihtiyaç duyar"]}]},
  {k:"calisma",label:"Çalışma alışkanlığı",opts:[
-  {v:"d",t:"Düzenli çalışır",s:1,ph:["düzenli çalışır","çalışma alışkanlığı gelişmiştir"]},
+  {v:"d",t:"Düzenli",s:1,ph:["düzenli çalışır","çalışma alışkanlığı gelişmiştir"]},
   {v:"b",t:"Oturmamış",s:0,ph:["çalışma düzenini oturtma sürecindedir","çalışmalarında istikrar kazanma konusunda desteğe ihtiyaç duyar"]},
-  {v:"y",t:"Yeterince çalışmaz",s:-1,ph:["düzenli çalışma alışkanlığını kazanma konusunda desteğe ihtiyaç duyar","evde çalışma düzeni kurma konusunda yönlendirmeye ihtiyaç duyar"]}]},
+  {v:"y",t:"Çalışmaz",s:-1,ph:["düzenli çalışma alışkanlığını kazanma konusunda desteğe ihtiyaç duyar","evde çalışma düzeni kurma konusunda yönlendirmeye ihtiyaç duyar"]}]},
  {k:"iletisim",label:"Sınıf içi iletişim",opts:[
   {v:"d",t:"Olumlu",s:1,ph:["arkadaşları ve öğretmenleriyle olumlu iletişim kurar","sınıf içi iletişimi olumludur"]},
-  {v:"b",t:"Zaman zaman sorun",s:0,ph:["arkadaşlarıyla iletişimini geliştirme sürecindedir","sınıf içi uyumunu güçlendirme konusunda zaman zaman desteğe ihtiyaç duyar"]},
+  {v:"b",t:"Bazen sorun",s:0,ph:["arkadaşlarıyla iletişimini geliştirme sürecindedir","sınıf içi uyumunu güçlendirme konusunda zaman zaman desteğe ihtiyaç duyar"]},
   {v:"y",t:"Uyum sorunu",s:-1,ph:["sınıf düzenine ve arkadaşlarına uyum konusunda desteğe ihtiyaç duyar","sınıf içi iletişimini geliştirme konusunda yönlendirmeye ihtiyaç duyar"]}]}
 ];
 const AFLAGS = [
@@ -821,7 +878,7 @@ function freshData(){ const d = {}; ROSTER.forEach(r => { d[r.id] = freshOne(r.i
 function freshClist(){ return ROSTER.map(r => ({ id: r.id, name: r.n, subj: r.s, grade: r.g })); }
 function defaults(){
   return { cls:"5A-MAT", clist:freshClist(), th:[50,65,80,90], len:"orta", term:"1", hitapMode:"tumu", imzaOn:true, imza:"",
-    sort:"ad", dir:1, copyMode:"yorum", seed:1, data:freshData(), view:"gel", gr:1, ar:1, alisLen:"kisa", nextIdx:1000, learned:[], seeded:{}, unlocked:false };
+    sort:"ad", dir:1, copyMode:"yorum", seed:1, data:freshData(), view:"gel", gr:1, ar:2, alisLen:"kisa", nextIdx:1000, learned:[], seeded:{}, unlocked:false };
 }
 let S = defaults();
 try{
@@ -1135,7 +1192,6 @@ function rowHTMLAlis(st){
     '<div class="ctl"><label class="fld">Ortalama<input type="text" class="ort" inputmode="decimal" value="'+esc(fmt(st.ort))+'" autocomplete="off"></label>'+
     '<div class="fld">Seviye<span class="pill'+(lv<0?" none":"")+'" '+(lv>=0?'style="--c:var(--l'+lv+')"':"")+'>'+(lv<0?"Ortalama yok":LV[lv])+'</span></div></div></div>'+
     '<div class="cm"><textarea class="txt" rows="3" aria-label="'+esc(st.ad)+' için ALİS yorumu" placeholder="Ortalama girildiğinde ortalamaya göre geri bildirim cümlesi burada oluşur">'+esc(textOf(st))+'</textarea>'+
-    '<div class="added" aria-live="polite"></div>'+
     '<div class="acts"><button type="button" class="btn primary small copy">Kopyala</button><button type="button" class="btn small reroll">Yorumu değiştir</button><button type="button" class="btn small learn" title="Bu yorumdaki akademik cümleleri havuza ekler; aynı seviyedeki diğer ALİS yorumlarına karışır">Yorumu öğret</button>'+
     '<span class="edited"'+((st.id in EM())?"":" hidden")+'>Elle düzenlendi</span><span class="count"></span></div>'+
     skillsHTML(al)+behaviorsHTML(al)+'</div></article>';
@@ -1154,15 +1210,13 @@ function focusHTML(v){
     '<article class="row arow fcard" data-id="'+esc(st.id)+'">'+
     '<div class="fhead"><button type="button" class="btn small fnav" data-d="-1" aria-label="Önceki öğrenci" title="Önceki (←)"'+(i===0?" disabled":"")+'>←</button>'+
     '<div class="fwho"><span class="no">'+(st.no!=null?"#"+st.no:"")+'</span><h3 class="name">'+esc(st.ad)+'</h3><span class="fpos">'+(i+1)+' / '+v.length+'</span></div>'+
+    '<label class="fld inl">Ortalama<input type="text" class="ort" inputmode="decimal" value="'+esc(fmt(st.ort))+'" autocomplete="off"></label>'+
+    '<span class="pill'+(lv<0?" none":"")+'" '+(lv>=0?'style="--c:var(--l'+lv+')"':"")+'>'+(lv<0?"Ortalama yok":LV[lv])+'</span>'+
     '<button type="button" class="btn small fnav" data-d="1" aria-label="Sonraki öğrenci" title="Sonraki (→)"'+(i===v.length-1?" disabled":"")+'>→</button></div>'+
-    '<div class="fmeta"><label class="fld inl">Ortalama<input type="text" class="ort" inputmode="decimal" value="'+esc(fmt(st.ort))+'" autocomplete="off"></label>'+
-    '<span class="pill'+(lv<0?" none":"")+'" '+(lv>=0?'style="--c:var(--l'+lv+')"':"")+'>'+(lv<0?"Ortalama yok":LV[lv])+'</span></div>'+
     '<textarea class="txt" rows="3" aria-label="'+esc(st.ad)+' için ALİS yorumu" placeholder="Ortalama girildiğinde ortalamaya göre geri bildirim cümlesi burada oluşur">'+esc(textOf(st))+'</textarea>'+
-    '<div class="added" aria-live="polite"></div>'+
     '<div class="acts"><button type="button" class="btn primary small copynext" title="Yorumu kopyalar ve sonraki öğrenciye geçer">Kopyala ve sonraki →</button><button type="button" class="btn small copy">Kopyala</button><button type="button" class="btn small reroll">Yorumu değiştir</button><button type="button" class="btn small learn" title="Bu yorumdaki akademik cümleleri havuza ekler; aynı seviyedeki diğer ALİS yorumlarına karışır">Yorumu öğret</button>'+
     '<span class="edited"'+((st.id in EM())?"":" hidden")+'>Elle düzenlendi</span><span class="count"></span></div>'+
-    skillsHTML(al)+behaviorsHTML(al)+
-    '<p class="hint fkeys">← → tuşlarıyla öğrenciler arasında geçebilirsiniz.</p></article></div>';
+    skillsHTML(al)+behaviorsHTML(al)+'</article></div>';
 }
 function focusSet(id){ focusId = id; renderList(); const b = document.querySelector('.fl-item[aria-current="true"]'); if(b && b.scrollIntoView) b.scrollIntoView({block:"nearest"}); }
 function focusGo(d){
@@ -1171,11 +1225,7 @@ function focusGo(d){
 }
 function sentSplit(t){ return (String(t || "").replace(/\s+/g, " ").match(/[^.!?]+(?:[.!?]+|$)/g) || []).map(s => s.trim()).filter(Boolean); }
 function showAdded(row, before, after){
-  const el = row.querySelector(".added"); if(!el) return;
-  const sb = sentSplit(before), sa = sentSplit(after);
-  const add = sa.filter(x => sb.indexOf(x) < 0), rem = sb.filter(x => sa.indexOf(x) < 0);
-  el.innerHTML = add.map(x => '<span class="add">+ '+esc(x)+'</span>').join("") + rem.map(x => '<span class="rem">− '+esc(x)+'</span>').join("");
-  const ta = row.querySelector(".txt"); if(ta && (add.length || rem.length)){ ta.classList.remove("flash"); void ta.offsetWidth; ta.classList.add("flash"); }
+  const ta = row.querySelector(".txt"); if(ta && before !== after){ ta.classList.remove("flash"); void ta.offsetWidth; ta.classList.add("flash"); }
 }
 const rowHTML = st => S.view === "alis" ? rowHTMLAlis(st) : rowHTMLGel(st);
 function rowHTMLGel(st){
@@ -1227,13 +1277,20 @@ function renderSum(){
     '<button type="button" class="chip all" data-lv="" aria-pressed="'+(lvFilter===null)+'">Tümü '+l.length+'</button>'+
     LV.map((n,i)=>'<button type="button" class="chip" style="--c:var(--l'+i+')" data-lv="'+i+'" aria-pressed="'+(lvFilter===i)+'">'+n+' '+cnt[i]+'</button>').join("");
 }
+function fitFl(){
+  const ap = document.querySelector(".app"); if(!ap.classList.contains("fm")) return;
+  ap.style.setProperty("--fltop", Math.round($("#list").getBoundingClientRect().top + window.scrollY) + "px");
+}
+window.addEventListener("resize", () => { try{ fitFl(); }catch(e){} });
 function renderList(){
   const v = visible();
   const fm = S.view === "alis" && S.alisMode !== "liste" && v.length > 0;
   $("#list").classList.toggle("focusmode", fm);
+  document.querySelector(".app").classList.toggle("fm", fm);
   $("#list").innerHTML = !v.length ? '<div class="empty">Bu görünümde öğrenci yok.</div>' : (fm ? focusHTML(v) : v.map(rowHTML).join(""));
   autosizeAll();
   document.querySelectorAll(".row").forEach(updCount);
+  fitFl();
   $("#dir").textContent = S.dir === 1 ? "A → Z / küçükten büyüğe" : "Z → A / büyükten küçüğe";
   renderSum();
 }
@@ -1431,6 +1488,7 @@ function alisToggle(row, st, ch){
   const mk = document.querySelector('.fl-item[aria-current="true"]'); if(mk){ const a = st.al || {}; const on = Object.keys(a).some(k => a[k]); let dot = mk.querySelector(".mk"); if(on && !dot){ dot = document.createElement("i"); dot.className = "mk"; mk.appendChild(dot); } else if(!on && dot) dot.remove(); }
 }
 $("#views").addEventListener("click", e => { const b = e.target.closest(".vtab"); if(!b || b.dataset.v === S.view) return; stashAll(); S.view = b.dataset.v; loadKey(curKey()); lvFilter = null; save(); renderAll(); });
+$("#toolsBtn").addEventListener("click", () => { const a = document.querySelector(".app"); const on = a.classList.toggle("tools"); $("#toolsBtn").setAttribute("aria-pressed", String(on)); });
 $("#alisModeSeg").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return; S.alisMode = b.dataset.v; save(); renderControls(); renderList(); });
 $("#alisLenSeg").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return; S.alisLen = b.dataset.v; save(); renderControls(); renderList(); });
 function bulk(mode){

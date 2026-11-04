@@ -158,7 +158,42 @@ details.paste summary{cursor:pointer;padding:11px 16px;font-weight:600}
 .skl{flex:1;min-width:0;font-size:13px}
 .sk .ch{width:32px;padding:1px 0;text-align:center;font-weight:700;font-size:15px;line-height:1.4}
 .skhint{font-weight:500;text-transform:none;letter-spacing:0}
-details.more{margin-top:2px}
+.added{display:flex;flex-direction:column;gap:2px;font-size:13px;line-height:1.45}
+.added:empty{display:none}
+.added .add{color:var(--l3);font-weight:600}
+.added .rem{color:var(--muted);text-decoration:line-through}
+.txt.flash{animation:txtflash 1s ease-out}
+@keyframes txtflash{0%{box-shadow:0 0 0 3px var(--l3)}100%{box-shadow:0 0 0 0 transparent}}
+@media (prefers-reduced-motion:reduce){.txt.flash{animation:none}}
+#list.focusmode{background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;border-radius:0}
+.app #list.focusmode{border-top:0}
+.focus{display:grid;grid-template-columns:230px minmax(0,1fr);gap:14px;align-items:start}
+.fl{display:flex;flex-direction:column;gap:3px;max-height:calc(100vh - 40px);overflow:auto;position:sticky;top:10px;padding:6px;border-radius:12px;background:var(--glass);border:1px solid var(--glass-line);box-shadow:var(--shine),var(--drop)}
+.fl-item{display:flex;align-items:center;gap:8px;width:100%;border:1px solid transparent;background:transparent;border-radius:8px;padding:5px 8px;text-align:left;cursor:pointer;font-size:13px;color:var(--ink)}
+.fl-item:hover{border-color:var(--edge)}
+.fl-item .lv{flex:none;width:9px;height:9px;border-radius:50%;background:var(--c)}
+.fl-item .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fl-item small{font-variant-numeric:tabular-nums;opacity:.7}
+.fl-item .mk{flex:none;width:7px;height:7px;border-radius:50%;background:var(--l3);box-shadow:0 0 0 2px color-mix(in srgb,var(--l3) 30%,transparent)}
+.fl-item[aria-current="true"]{background-image:var(--metal-accent);color:var(--accent-ink);border-color:rgba(20,30,45,.35);font-weight:600}
+.fcard.row{display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:1px solid var(--glass-line);border-radius:12px;background:var(--glass);box-shadow:var(--shine),var(--drop);border-top:3px solid var(--sj)}
+.fhead{display:flex;align-items:center;gap:10px}
+.fwho{flex:1;min-width:0;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.fwho .name{font-size:19px}
+.fpos{margin-left:auto;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.fnav{min-width:40px;font-size:16px}
+.fnav:disabled{opacity:.4;cursor:default}
+.fmeta{display:flex;align-items:flex-end;gap:12px}
+.fld.inl{width:110px}
+.fcard .txt{font-size:16px;overflow:auto}
+.fkeys{margin-top:-2px}
+@media (max-width:820px){
+  .focus{grid-template-columns:minmax(0,1fr)}
+  .fl{flex-direction:row;overflow-x:auto;max-height:none;position:static}
+  .fl-item{width:auto;flex:none;white-space:nowrap}
+  .fl-item .nm{max-width:150px}
+}
+details.thbox>summary{font-family:var(--font-display);font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px}\ndetails.more{margin-top:2px}
 details.more>summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);padding:4px 0}
 details.more>.cgs,details.more>.skg{margin-top:8px}
 .lrn-lv{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
@@ -294,12 +329,12 @@ h1{background:linear-gradient(180deg,var(--h1a),var(--h1b));-webkit-background-c
   <div class="rnote" id="roundNote"></div>
 
   <section class="panel" aria-label="Ayarlar">
-    <div>
-      <h2>Puan aralıkları</h2>
+    <details id="thBox" class="thbox" open>
+      <summary>Puan aralıkları</summary>
       <div class="band" id="band" aria-hidden="true"></div>
       <div class="band-scale" id="bandScale" aria-hidden="true"></div>
       <div class="th-grid" id="thGrid"></div>
-    </div>
+    </details>
     <div class="opts" id="optsGel">
       <div class="fld"><span>Yorum uzunluğu</span>
         <div class="seg" id="lenSeg">
@@ -333,6 +368,12 @@ h1{background:linear-gradient(180deg,var(--h1a),var(--h1b));-webkit-background-c
         <div class="seg" id="alisLenSeg">
           <button type="button" data-v="kisa">Kısa</button>
           <button type="button" data-v="uzun">Ayrıntılı</button>
+        </div>
+      </div>
+      <div class="fld"><span>Görünüm</span>
+        <div class="seg" id="alisModeSeg">
+          <button type="button" data-v="tek">Tek tek</button>
+          <button type="button" data-v="liste">Liste</button>
         </div>
       </div>
       <p class="hint" style="align-self:center">Her öğrenci için ortalamaya göre tek cümlelik bir geri bildirim yazılır. Beceri düğmelerinde (+ güçlü, − gelişime açık) işaretlediklerinizin cümleleri eklenir; işaret koymazsanız yalnızca bu cümle kalır.</p>
@@ -1082,21 +1123,59 @@ function skillsHTML(al){
 function grpHTML(g, al){
   return '<div class="cg"><span class="cgl">'+g.label+'</span><div class="chs">' + g.opts.map(o => '<button type="button" class="ch '+(o.s>0?"sp":o.s<0?"sn":"sm")+'" data-g="'+g.k+'" data-v="'+o.v+'" aria-pressed="'+(al[g.k]===o.v)+'">'+esc(o.t)+'</button>').join("") + '</div></div>';
 }
+function behaviorsHTML(al){
+  const flg = '<div class="cg"><span class="cgl">Öneri</span><div class="chs">' + AFLAGS.map(f => '<button type="button" class="ch sf" data-g="f_'+f.k+'" data-v="1" aria-pressed="'+(!!al["f_"+f.k])+'">'+esc(f.label)+'</button>').join("") + '</div></div>';
+  const any = AGROUPS.some(g => al[g.k]) || AFLAGS.some(f => al["f_"+f.k]);
+  return '<details class="more"'+((subjOf() === "MAT" || any) ? " open" : "")+'><summary>Ödev, diğer davranışlar ve öneriler</summary><div class="cgs">'+AGROUPS.map(g => grpHTML(g, al)).join("")+flg+'</div></details>';
+}
 function rowHTMLAlis(st){
   const lv = levelOf(st.ort), al = st.al || {};
-  const odev = grpHTML(AGROUPS[0], al);
-  const rest = AGROUPS.slice(1).map(g => grpHTML(g, al)).join("");
-  const flg = '<div class="cg"><span class="cgl">Öneri</span><div class="chs">' + AFLAGS.map(f => '<button type="button" class="ch sf" data-g="f_'+f.k+'" data-v="1" aria-pressed="'+(!!al["f_"+f.k])+'">'+esc(f.label)+'</button>').join("") + '</div></div>';
-  const anyMore = AGROUPS.slice(1).some(g => al[g.k]) || AFLAGS.some(f => al["f_"+f.k]);
   return '<article class="row arow" data-id="'+esc(st.id)+'">'+
     '<div class="who"><div class="who-top"><span class="no">'+(st.no!=null?"#"+st.no:"")+'</span><h3 class="name">'+esc(st.ad)+'</h3></div>'+
     '<div class="ctl"><label class="fld">Ortalama<input type="text" class="ort" inputmode="decimal" value="'+esc(fmt(st.ort))+'" autocomplete="off"></label>'+
     '<div class="fld">Seviye<span class="pill'+(lv<0?" none":"")+'" '+(lv>=0?'style="--c:var(--l'+lv+')"':"")+'>'+(lv<0?"Ortalama yok":LV[lv])+'</span></div></div></div>'+
     '<div class="cm"><textarea class="txt" rows="3" aria-label="'+esc(st.ad)+' için ALİS yorumu" placeholder="Ortalama girildiğinde ortalamaya göre geri bildirim cümlesi burada oluşur">'+esc(textOf(st))+'</textarea>'+
+    '<div class="added" aria-live="polite"></div>'+
     '<div class="acts"><button type="button" class="btn primary small copy">Kopyala</button><button type="button" class="btn small reroll">Yorumu değiştir</button><button type="button" class="btn small learn" title="Bu yorumdaki akademik cümleleri havuza ekler; aynı seviyedeki diğer ALİS yorumlarına karışır">Yorumu öğret</button>'+
     '<span class="edited"'+((st.id in EM())?"":" hidden")+'>Elle düzenlendi</span><span class="count"></span></div>'+
-    skillsHTML(al)+'<div class="cgs">'+odev+'</div>'+
-    '<details class="more"'+((subjOf() === "MAT" || anyMore)?" open":"")+'><summary>Diğer davranışlar ve öneriler</summary><div class="cgs">'+rest+flg+'</div></details></div></article>';
+    skillsHTML(al)+behaviorsHTML(al)+'</div></article>';
+}
+/* ---- Tek tek (hızlı giriş) görünümü: solda öğrenci listesi, sağda seçili öğrenci ---- */
+let focusId = null, thView = null;
+function focusHTML(v){
+  if(!v.some(s => s.id === focusId)) focusId = v[0].id;
+  const i = v.findIndex(s => s.id === focusId), st = v[i], lv = levelOf(st.ort), al = st.al || {};
+  const items = v.map(s => {
+    const l = levelOf(s.ort), a = s.al || {};
+    const mk = Object.keys(a).some(k => a[k]) || (s.id in EM());
+    return '<button type="button" class="fl-item" data-sid="'+esc(s.id)+'" aria-current="'+(s.id === focusId)+'"'+(l>=0?' style="--c:var(--l'+l+')"':' style="--c:var(--muted)"')+'><i class="lv"></i><span class="nm">'+esc(s.ad)+'</span><small>'+esc(fmt(s.ort))+'</small>'+(mk?'<i class="mk" title="işaretli"></i>':'')+'</button>';
+  }).join("");
+  return '<div class="focus"><aside class="fl" aria-label="Öğrenciler">'+items+'</aside>'+
+    '<article class="row arow fcard" data-id="'+esc(st.id)+'">'+
+    '<div class="fhead"><button type="button" class="btn small fnav" data-d="-1" aria-label="Önceki öğrenci" title="Önceki (←)"'+(i===0?" disabled":"")+'>←</button>'+
+    '<div class="fwho"><span class="no">'+(st.no!=null?"#"+st.no:"")+'</span><h3 class="name">'+esc(st.ad)+'</h3><span class="fpos">'+(i+1)+' / '+v.length+'</span></div>'+
+    '<button type="button" class="btn small fnav" data-d="1" aria-label="Sonraki öğrenci" title="Sonraki (→)"'+(i===v.length-1?" disabled":"")+'>→</button></div>'+
+    '<div class="fmeta"><label class="fld inl">Ortalama<input type="text" class="ort" inputmode="decimal" value="'+esc(fmt(st.ort))+'" autocomplete="off"></label>'+
+    '<span class="pill'+(lv<0?" none":"")+'" '+(lv>=0?'style="--c:var(--l'+lv+')"':"")+'>'+(lv<0?"Ortalama yok":LV[lv])+'</span></div>'+
+    '<textarea class="txt" rows="3" aria-label="'+esc(st.ad)+' için ALİS yorumu" placeholder="Ortalama girildiğinde ortalamaya göre geri bildirim cümlesi burada oluşur">'+esc(textOf(st))+'</textarea>'+
+    '<div class="added" aria-live="polite"></div>'+
+    '<div class="acts"><button type="button" class="btn primary small copynext" title="Yorumu kopyalar ve sonraki öğrenciye geçer">Kopyala ve sonraki →</button><button type="button" class="btn small copy">Kopyala</button><button type="button" class="btn small reroll">Yorumu değiştir</button><button type="button" class="btn small learn" title="Bu yorumdaki akademik cümleleri havuza ekler; aynı seviyedeki diğer ALİS yorumlarına karışır">Yorumu öğret</button>'+
+    '<span class="edited"'+((st.id in EM())?"":" hidden")+'>Elle düzenlendi</span><span class="count"></span></div>'+
+    skillsHTML(al)+behaviorsHTML(al)+
+    '<p class="hint fkeys">← → tuşlarıyla öğrenciler arasında geçebilirsiniz.</p></article></div>';
+}
+function focusSet(id){ focusId = id; renderList(); const b = document.querySelector('.fl-item[aria-current="true"]'); if(b && b.scrollIntoView) b.scrollIntoView({block:"nearest"}); }
+function focusGo(d){
+  const v = visible(), i = v.findIndex(s => s.id === focusId), n = v[i + d];
+  if(n) focusSet(n.id);
+}
+function sentSplit(t){ return (String(t || "").replace(/\s+/g, " ").match(/[^.!?]+(?:[.!?]+|$)/g) || []).map(s => s.trim()).filter(Boolean); }
+function showAdded(row, before, after){
+  const el = row.querySelector(".added"); if(!el) return;
+  const sb = sentSplit(before), sa = sentSplit(after);
+  const add = sa.filter(x => sb.indexOf(x) < 0), rem = sb.filter(x => sa.indexOf(x) < 0);
+  el.innerHTML = add.map(x => '<span class="add">+ '+esc(x)+'</span>').join("") + rem.map(x => '<span class="rem">− '+esc(x)+'</span>').join("");
+  const ta = row.querySelector(".txt"); if(ta && (add.length || rem.length)){ ta.classList.remove("flash"); void ta.offsetWidth; ta.classList.add("flash"); }
 }
 const rowHTML = st => S.view === "alis" ? rowHTMLAlis(st) : rowHTMLGel(st);
 function rowHTMLGel(st){
@@ -1150,7 +1229,9 @@ function renderSum(){
 }
 function renderList(){
   const v = visible();
-  $("#list").innerHTML = v.length ? v.map(rowHTML).join("") : '<div class="empty">Bu görünümde öğrenci yok.</div>';
+  const fm = S.view === "alis" && S.alisMode !== "liste" && v.length > 0;
+  $("#list").classList.toggle("focusmode", fm);
+  $("#list").innerHTML = !v.length ? '<div class="empty">Bu görünümde öğrenci yok.</div>' : (fm ? focusHTML(v) : v.map(rowHTML).join(""));
   autosizeAll();
   document.querySelectorAll(".row").forEach(updCount);
   $("#dir").textContent = S.dir === 1 ? "A → Z / küçükten büyüğe" : "Z → A / büyükten küçüğe";
@@ -1162,6 +1243,8 @@ function renderControls(){
   $("#optsGel").hidden = al; $("#optsAlis").hidden = !al; $("#bulkBox").hidden = !al;
   $("#h1").textContent = al ? "ALİS · " + S.ar + ". giriş" : "Gelişim raporu · " + S.gr + ". dönem";
   $("#alisLenSeg").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === S.alisLen)));
+  if(thView !== S.view){ thView = S.view; $("#thBox").open = S.view !== "alis"; }
+  $("#alisModeSeg").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === (S.alisMode === "liste" ? "liste" : "tek"))));
   $("#lenSeg").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === S.len));
   $("#term").value = S.termBy["g" + S.gr] || "0"; $("#hitapMode").value = S.hitapMode; $("#imza").value = S.imza; $("#imzaOn").checked = S.imzaOn;
   $("#sort").value = S.sort; $("#copyMode").value = S.copyMode;
@@ -1323,20 +1406,32 @@ list.addEventListener("change", e => {
 list.addEventListener("click", e => {
   const c = stOf(e.target); if(!c) return; const {row, st} = c;
   const ch = e.target.closest(".ch"); if(ch){ alisToggle(row, st, ch); return; }
+  if(e.target.closest(".fnav")){ focusGo(+e.target.closest(".fnav").dataset.d); return; }
+  if(e.target.closest(".copynext")){ const v = row.querySelector(".txt").value; if(!v){ toast("Önce ortalama girin"); return; } copyText(v, st.ad.split(" ")[0] + " için yorum kopyalandı"); focusGo(1); return; }
   if(e.target.closest(".copy")){ const v = row.querySelector(".txt").value; if(!v){ toast("Önce ortalama girin"); return; } copyText(v, st.ad.split(" ")[0] + " için yorum kopyalandı"); }
   else if(e.target.closest(".learn")){ const v = row.querySelector(".txt").value; if(!v){ toast("Önce ortalama girin"); return; } if(S.view === "alis") learnFromAlis(st, v); else learnFrom(st, v); }
   else if(e.target.closest(".reroll")){ if(S.view === "alis") st.arr = (st.arr||0) + 1; else st.rr++; delete EM()[st.id]; refreshRow(row, st, false); save(); }
+});
+$("#list").addEventListener("click", e => { const b = e.target.closest(".fl-item"); if(b) focusSet(b.dataset.sid); });
+document.addEventListener("keydown", e => {
+  if(S.view !== "alis" || S.alisMode === "liste" || e.ctrlKey || e.metaKey || e.altKey) return;
+  if(e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+  const a = document.activeElement; if(a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return;
+  e.preventDefault(); focusGo(e.key === "ArrowRight" ? 1 : -1);
 });
 window.addEventListener("resize", autosizeAll);
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(autosizeAll);
 
 function alisToggle(row, st, ch){
+  const before = row.querySelector(".txt").value;
   st.al = st.al || {}; const g = ch.dataset.g, v = ch.dataset.v;
   st.al[g] = (st.al[g] === v) ? "" : v;
   row.querySelectorAll('.ch[data-g="'+g+'"]').forEach(b => b.setAttribute("aria-pressed", String(st.al[g] === b.dataset.v)));
-  delete EM()[st.id]; refreshRow(row, st, false); save();
+  delete EM()[st.id]; refreshRow(row, st, false); showAdded(row, before, row.querySelector(".txt").value); save();
+  const mk = document.querySelector('.fl-item[aria-current="true"]'); if(mk){ const a = st.al || {}; const on = Object.keys(a).some(k => a[k]); let dot = mk.querySelector(".mk"); if(on && !dot){ dot = document.createElement("i"); dot.className = "mk"; mk.appendChild(dot); } else if(!on && dot) dot.remove(); }
 }
 $("#views").addEventListener("click", e => { const b = e.target.closest(".vtab"); if(!b || b.dataset.v === S.view) return; stashAll(); S.view = b.dataset.v; loadKey(curKey()); lvFilter = null; save(); renderAll(); });
+$("#alisModeSeg").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return; S.alisMode = b.dataset.v; save(); renderControls(); renderList(); });
 $("#alisLenSeg").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return; S.alisLen = b.dataset.v; save(); renderControls(); renderList(); });
 function bulk(mode){
   const sel = {};
